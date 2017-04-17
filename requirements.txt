@@ -1,21 +1,18 @@
 Flask
-Flask-Assets
-Jinja2
-MarkupSafe
-Werkzeug
-boxsdk
-cx-Oracle
-enum34
-itsdangerous
-requests
-requests-toolbelt
-six
-webassets
-wsgiref
-certifi
-urllib3
-ndg-httpsclient
-pyasn1
-cryptography
 pymongo
-dateutils
+
+# Working with box yet? 
+# boxsdk
+
+# May not be necessary
+# Flask-Assets
+# enum34
+# requests
+# requests-toolbelt
+# webassets
+# certifi
+# urllib3
+# ndg-httpsclient
+# pyasn1
+# cryptography
+# dateutils
