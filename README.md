@@ -3,6 +3,7 @@
 ```
 #!bash
 brew install python3
+brew install mongodb
 pip3 install virtualenv
 mkdir .../data_sharing
 cd .../data_sharing
