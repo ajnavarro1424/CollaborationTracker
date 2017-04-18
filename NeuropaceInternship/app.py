@@ -19,16 +19,16 @@ app.session_interface = MongoEngineSessionInterface(mdb)
 
 
 class Collaboration(mdb.Document):
-    entry_date = mdb.DateTimeField(required = True, label = 'Entry Date')
+    #Collaboration class will contain all the fields for all WF
+    entry_date = mdb.DateTimeField(required = True)
     entered_by = mdb.StringField(required = True)
     institution_contact = mdb.StringField(required = True)
     pi = mdb.StringField(required = True)
-    submit = SubmitField(label='Submit Initiation')
 
-CollabForm = model_form(
+InitialForm = model_form(
     Collaboration,
-    only = ['entry_date', 'entered_by', 'institution_contact', 'pi']
-
+    only = ['entry_date', 'entered_by', 'institution_contact', 'pi'],
+    field_args = {'entry_date' : {'label_attr': 'Entry Date'}}
 )
 
 
@@ -42,7 +42,7 @@ def main():
 
 @app.route("/init", methods=["GET","POST"])
 def initiation():
-    form = CollabForm()
+    form = InitialForm()
     # if request.method == 'POST' and form.validate():
         # form is valid, proceed to next WF step
         # redirect('/details')
