@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 
@@ -20,7 +20,7 @@ app.session_interface = MongoEngineSessionInterface(mdb)
 
 class Collaboration(mdb.Document):
     #Collaboration class will contain all the fields for all WF
-    entry_date = mdb.DateTimeField(required = True)
+    entry_date = mdb.DateTimeField(required = False)
     entered_by = mdb.StringField(required = True)
     institution_contact = mdb.StringField(required = True)
     pi = mdb.StringField(required = True)
@@ -28,8 +28,11 @@ class Collaboration(mdb.Document):
 InitialForm = model_form(
     Collaboration,
     only = ['entry_date', 'entered_by', 'institution_contact', 'pi'],
-    field_args = {'entry_date' : {'label_attr': 'Entry Date'}}
-)
+    field_args = {'entry_date' : {'label': 'Entry Date'},
+                'entered_by' : {'label': 'Entered By'},
+                'institution_contact' : {'label': 'Institution Contact'},
+                'pi' : {'label': 'Principal Investigator'}}
+    )
 
 
 
@@ -40,12 +43,13 @@ def main():
     return render_template('index.html')
 
 
-@app.route("/init", methods=["GET","POST"])
+@app.route('/init', methods=["GET","POST"])
 def initiation():
-    form = InitialForm()
-    # if request.method == 'POST' and form.validate():
-        # form is valid, proceed to next WF step
-        # redirect('/details')
+    form = InitialForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        collab = Collaboration(form.entry_date.data, form.entered_by.data, form.institution_contact.data, form.pi.data)
+        collab.save()
+        return redirect('/')
     return render_template('init.html', form=form)
 
 @app.route("/details")
