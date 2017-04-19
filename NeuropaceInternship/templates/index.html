@@ -35,13 +35,52 @@
           </form>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="#">Audit Log <span class="sr-only">(current)</span></a></li>
           <li><a href="#">Start Collaboration</a></li>
+          <li class="active"><a href="#">Audit Log <span class="sr-only">(current)</span></a></li>
           <li><a href="#">Reports</a></li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-    <h1>Does this work?</h1>
+    <h1>Welcome to the Collaboration Station</h1>
+    <h2>All Collaborations</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Entry Date</th>
+          <th>Entered By</th>
+          <th>Institution Contact</th>
+          <th>Principal Investigator</th>
+          <th colspan="2">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for collab in collabs %}
+          <tr>
+            <td>{{ collab.entry_date }}</td>
+            <td>{{ collab.entered_by }}</td>
+            <td>{{ collab.institution_contact }}</td>
+            <td>{{ collab.pi }}</td>
+            <td><a href="/edit/{{ collab.id }}">Edit</a></td>
+            <td><a href="">Destroy</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <h2>User Collaborations</h2>
+    <table>
+      <tr>
+        <th>Entry Date</th>
+        <th>Entered By</th>
+        <th>Institution Contact</th>
+        <th>Principal Investigator</th>
+        <th colspan="2">Options</th>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
   </body>
 </html>

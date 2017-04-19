@@ -38,17 +38,27 @@ InitialForm = model_form(
 
 @app.route("/")
 def main():
+    collabs = Collaboration.objects
+
+    return render_template('index.html', collabs=collabs)
 
 
-    return render_template('index.html')
-
+@app.route("/edit/<collab_id>")
+def edit(collab_id):
+    print(collab_id)
+    # Get a specific collab fromm the db
+    # selected_collab = find function(collab_id)
+    # Use selected collab to generate custom init form
+    # form = InitialForm(request.form)
+    # Pass form to template to render on view
+    return render_template('edit.html')
 
 @app.route('/init', methods=["GET","POST"])
 def initiation():
     form = InitialForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        collab = Collaboration(form.entry_date.data, form.entered_by.data, form.institution_contact.data, form.pi.data)
-        collab.save()
+        del(form.csrf_token)
+        form.save()
         return redirect('/')
     return render_template('init.html', form=form)
 
@@ -67,6 +77,7 @@ def sharing():pass
 
 @app.route("/closure")
 def closure():pass
+
 
 
 if __name__ == "__main__":
