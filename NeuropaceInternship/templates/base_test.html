@@ -1,4 +1,3 @@
-{# trigger htmldjango in vim #}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -56,24 +55,12 @@
               </div>
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
-            <li>
-              <div id='helpText'>
-              <p class="close">
-                <a href="#"
-                onclick="$('#helpLink').toggle(); $('#helpText').toggle();">close</a>
-              </p>
-              {% block help %} No help available {% endblock %}
-            </div> <!-- helpText --></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Start Collaboration</a></li>
+            <li><a href="/init">Start Collaboration</a></li>
             <li class="active"><a href="#">Audit Log <span class="sr-only">(current)</span></a></li>
             <li><a href="#">Reports</a></li>
-            <li>
-              <div id="helpLink" class='text-right'>
-                    <a href="#" onclick="$('#helpText').toggle();$('#helpLink').toggle();">Help?</a>
-              </div> <!-- helpLink -->
-            </li>
+            <li><a href="#" onclick="$('#helpText').toggle();$('#helpLink').toggle();">Help?</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->

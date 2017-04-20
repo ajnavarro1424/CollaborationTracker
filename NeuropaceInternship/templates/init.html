@@ -1,19 +1,20 @@
-{% macro with_errors(field) %}
-    <div class="form_field">{{ field.label }}:
-    {% if field.errors %}
-        {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-        {{ field(class=css_class, **kwargs) }}
-        <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-    {% else %}
-        {{ field(**kwargs) }}
-    {% endif %}
-    </div>
-{% endmacro %}
-<html>
-   <head>
+{% extends 'base_test.html' %}
+{% block content %}
+  {% macro with_errors(field) %}
+      <div class="form_field">{{ field.label }}:
+      {% if field.errors %}
+          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
+          {{ field(class=css_class, **kwargs) }}
+          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
+      {% else %}
+          {{ field(**kwargs) }}
+      {% endif %}
+      </div>
+  {% endmacro %}
+  <head>
        <title>Login Page</title>
-   </head>
-   <body>
+  </head>
+  <body>
        <h1>Initiation</h1>
        <form action="" method="post">
            {{with_errors(form.entry_date)}}
@@ -31,5 +32,5 @@
            <br>
            <input type="submit" name="" value="Submit Initiation">
        </form>
-   </body>
-</html>
+  </body>
+{% endblock %}
