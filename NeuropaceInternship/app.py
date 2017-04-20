@@ -1,12 +1,14 @@
+# Importing flask packages
 from flask_assets import Environment
 from flask import Flask, render_template, request, redirect
+# Importing mongoengine and forms to our flask framework
 from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 
 from flask_mongoengine.wtf import model_form
 
 
-
+# global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
 assets = Environment(app)
 # Pymongo setup
@@ -18,7 +20,7 @@ mdb = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(mdb)
 # mdb.init_app(app)
 
-
+# Model used to build our collection by passing our documents (document object)
 class Collaboration(mdb.Document):
     #Collaboration class will contain all the fields for all WF
     entry_date = mdb.DateTimeField()
@@ -26,9 +28,12 @@ class Collaboration(mdb.Document):
     institution_contact = mdb.StringField()
     pi = mdb.StringField()
 
-InitialForm = model_form(
+# Form representing the initiation view/stage
+InitiationForm = model_form(
     Collaboration,
+    # fields that InitiationForm takes in
     only = ['entry_date', 'entered_by', 'institution_contact', 'pi'],
+    # labels of fields in InitiationForm
     field_args = {'entry_date' : {'label': 'Entry Date'},
                 'entered_by' : {'label': 'Entered By'},
                 'institution_contact' : {'label': 'Institution Contact'},
@@ -36,7 +41,7 @@ InitialForm = model_form(
     )
 
 
-
+# Controller and routes
 @app.route("/")
 def main():
     collabs = Collaboration.objects
@@ -51,10 +56,10 @@ def edit(collab_id):
         # Get a user chosen collab from the db
         collab_select = Collaboration.objects(id=collab_id).first()
         # Use selected collab to generate populated init form
-        form = InitialForm(instance=collab_select)
+        form = InitiationForm(instance=collab_select)
 
     elif request.method == 'POST':
-        form = InitialForm(request.form)
+        form = InitiationForm(request.form)
         if form.validate_on_submit():
             del(form.csrf_token)
             form.save()
@@ -64,7 +69,7 @@ def edit(collab_id):
 
 @app.route('/init', methods=["GET","POST"])
 def initiation():
-    form = InitialForm(request.form)
+    form = InitiationForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
         del(form.csrf_token)
         form.save()
@@ -73,7 +78,6 @@ def initiation():
 
 @app.route("/details")
 def details():pass
-
 
 @app.route("/contract")
 def contract():pass
@@ -87,6 +91,11 @@ def sharing():pass
 @app.route("/closure")
 def closure():pass
 
+@app.route("/audit")
+def audit():pass
+
+@app.route("/reports")
+def reports():pass
 
 
 if __name__ == "__main__":
