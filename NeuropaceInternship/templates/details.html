@@ -1,4 +1,5 @@
 {% extends 'workflow.html' %}
+{% set active_page = 'details'%}
 {% block content %}
   {% macro with_errors(field) %}
       <div class="form_field">{{ field.label }}:
@@ -12,7 +13,7 @@
       </div>
   {% endmacro %}
   <head>
-       <title>Login Page</title>
+       <title>Project Details Page</title>
   </head>
   <body>
        <h1>Project Details</h1>

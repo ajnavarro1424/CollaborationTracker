@@ -81,15 +81,20 @@
             <span class="icon-bar"></span>
           </button>
         </div>
+        {% set side_bar = [
+          ('/init', 'init', 'Initiation', 'glyphicon-play'),
+          ('/details', 'details', 'Project Details', 'glyphicon-th-list'),
+          ('/contract', 'contract', 'Contract & Budget', 'glyphicon-piggy-bank'),
+          ('/legal', 'legal', 'IRB Docs & Required Language', 'glyphicon-lock'),
+          ('/sharing', 'sharing', 'Data Sharing', 'glyphicon-share'),
+          ('/closure', 'closure', 'Closure', 'glyphicon-ok')
+          ] -%}
+        {% set active_page = active_page -%}
         <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/init">Initiation<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
-            <li ><a href="/details">Project Details<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span></a></li>
-            </li>
-            <li ><a href="/contract">Contract & Budget<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>
-            <li ><a href="/legal">IRB Docs & Required Language<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>
-            <li ><a href="/sharing">Data Sharing<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>
-            <li ><a href="/closure">Closure<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span></a></li>
+            {% for href, id, caption, glyphicon in side_bar %}
+            <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon {{ glyphicon|e }}"></span></a></li>
+            {% endfor %}
           </ul>
         </div>
       </div>

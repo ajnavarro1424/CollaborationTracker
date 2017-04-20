@@ -101,7 +101,7 @@ def legal():
         del(form.csrf_token)
         form.save()
         return redirect('/')
-    return render_template('contract.html', form=form)
+    return render_template('legal.html', form=form)
 
 @app.route("/sharing")
 def sharing():

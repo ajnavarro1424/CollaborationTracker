@@ -1,4 +1,5 @@
 {% extends 'workflow.html' %}
+{% set active_page = 'sharing'%}
 {% block content %}
   {% macro with_errors(field) %}
       <div class="form_field">{{ field.label }}:
@@ -12,10 +13,10 @@
       </div>
   {% endmacro %}
   <head>
-       <title>Login Page</title>
+       <title>Data Sharing</title>
   </head>
   <body>
-       <h1>Initiation</h1>
+       <h1>Data Sharing</h1>
        <form action="" method="post">
            {{with_errors(form.entry_date)}}
            <br>
@@ -30,7 +31,7 @@
            {{ form.csrf_token }}
            <br>
            <br>
-           <input type="submit" name="" value="Submit Initiation">
+           <input type="submit" name="" value="Submit Data Sharing">
        </form>
   </body>
 {% endblock %}
