@@ -77,19 +77,49 @@ def initiation():
     return render_template('init.html', form=form)
 
 @app.route("/details")
-def details():pass
+def details():
+    form = InitiationForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        del(form.csrf_token)
+        form.save()
+        return redirect('/')
+    return render_template('details.html', form=form)
 
 @app.route("/contract")
-def contract():pass
+def contract():
+    form = InitiationForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        del(form.csrf_token)
+        form.save()
+        return redirect('/')
+    return render_template('contract.html', form=form)
 
 @app.route("/legal")
-def legal():pass
+def legal():
+    form = InitiationForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        del(form.csrf_token)
+        form.save()
+        return redirect('/')
+    return render_template('contract.html', form=form)
 
 @app.route("/sharing")
-def sharing():pass
+def sharing():
+    form = InitiationForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        del(form.csrf_token)
+        form.save()
+        return redirect('/')
+    return render_template('sharing.html', form=form)
 
 @app.route("/closure")
-def closure():pass
+def closure():
+    form = InitiationForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        del(form.csrf_token)
+        form.save()
+        return redirect('/')
+    return render_template('closure.html', form=form)
 
 @app.route("/audit")
 def audit():pass
