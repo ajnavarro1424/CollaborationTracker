@@ -6,7 +6,7 @@ flask_mongoengine
 # boxsdk
 
 # May not be necessary
-# Flask-Assets
+ Flask-Assets
 # enum34
 # requests
 # requests-toolbelt
