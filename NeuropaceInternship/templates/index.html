@@ -5,9 +5,8 @@
   <table>
     <thead>
       <tr>
-        <th>Entry Date</th>
-        <th>Entered By</th>
         <th>Institution Contact</th>
+        <th>Status</th>
         <th>Principal Investigator</th>
         <th colspan="2">Options</th>
       </tr>
@@ -15,9 +14,8 @@
     <tbody>
       {% for collab in collabs %}
         <tr>
-          <td>{{ collab.entry_date }}</td>
-          <td>{{ collab.entered_by }}</td>
           <td>{{ collab.institution_contact }}</td>
+          <td>{{ collab.status }}</td>
           <td>{{ collab.pi }}</td>
           <td><a href="/edit/{{ collab.id }}">Edit</a></td>
           <td><a href="">Destroy</a></td>
@@ -28,9 +26,8 @@
   <h2>User Collaborations</h2>
   <table>
     <tr>
-      <th>Entry Date</th>
-      <th>Entered By</th>
       <th>Institution Contact</th>
+      <th>Status</th>
       <th>Principal Investigator</th>
       <th colspan="2">Options</th>
     </tr>

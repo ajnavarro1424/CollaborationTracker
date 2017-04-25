@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 
 from flask_mongoengine.wtf import model_form
+from wtforms.widgets import HiddenInput
 
 
 # global variable representing the entire app (Flask object called 'app')
@@ -31,7 +32,7 @@ class Collaboration(mdb.Document):
     pi = mdb.StringField()
     reason = mdb.StringField() #dropdown-menu
     category = mdb.StringField() #dropdown-menu
-    init_comments = mdb.StringField()
+    init_notes = mdb.StringField()
     # Details workflow (Flow2/Pg1 is Green-light or Red-light)
     neuropace_contact = mdb.StringField() #dropdown-menu
     sharing_method = mdb.StringField() #dropdown-menu
@@ -45,7 +46,7 @@ class Collaboration(mdb.Document):
     accessories_needed = mdb.BooleanField()
     accessories_needed_language = mdb.StringField() #dropdown-menu
     single_multi_center = mdb.StringField() #dropdown-menu
-    detail_comments = mdb.StringField()
+    detail_notes = mdb.StringField()
     #Contracts and Financials (Flow2/Pg3)
     funding_source = mdb.StringField() #dropdown-menu
     np_compensation = mdb.BooleanField()
@@ -69,47 +70,75 @@ class Collaboration(mdb.Document):
     closure_notes = mdb.StringField()
 
 
-
-def nested_set(dic, keys, value):
-    for key in keys[:-1]:
-        dic = dic.setdefault(key, {})
-    dic[keys[-1]] = value
-
 def labelize(field_name):
     return field_name.replace('_', ' ').title()
 
 def collab_model_form(model, only, field_args={}, **kwargs):
-     for field in only:
+    # field_args['id'] = {'widget' : HiddenInput}
+    for field in only:
         # generate/append field_args for each field; esp label
         if field in field_args:
             field_args[field]['label'] = labelize(field)
         else:
             field_args[field] = {'label': labelize(field)}
 
-     print (field_args)
-     return model_form(model, only=only, field_args=field_args, **kwargs)
+    print(field_args)
+    return model_form(model, only=only, field_args=field_args, **kwargs)
 
-# Form representing the initiation view/stage
-InitiationForm = model_form(
-    Collaboration,
-    # fields that InitiationForm takes in
-    only = ['entry_date', 'entered_by', 'institution_contact', 'pi'],
-    # labels of fields in InitiationForm
-    field_args = {'entry_date' : {'label': 'Entry Date'},
-                'entered_by' : {'label': 'Entered By'},
-                'institution_contact' : {'label': 'Institution Contact'},
-                'pi' : {'label': 'Principal Investigator'}}
-    )
+def generate_id():
+    collab = Collaboration()
+    collab_new = collab.save()
+    print (str(collab_new.id))
+    # return str(collab_new.id)
+    return collab_new
+    # return Collaboration.save()
 
-DetailsForm = collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'dataset_description', 'phi_present', 'share_type', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_needed_language', 'single_multi_center', 'detail_comments'])
+form_dict = {
+            'init' : collab_model_form(Collaboration, ['entry_date', 'entered_by', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
+            'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'dataset_description', 'phi_present', 'share_type', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_needed_language', 'single_multi_center','status', 'detail_notes']),
+            'contract' : collab_model_form(Collaboration, ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed', 'budget_needed', 'status', 'contract_notes']),
+            'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'status', 'legal_notes']),
+            'closure' : collab_model_form(Collaboration, ['status', 'closure_notes'])
+            }
 
+stage_array = ["init", "details", "contract", "legal", "closure"]
 # Controller and routes
 @app.route("/")
 def main():
     collabs = Collaboration.objects
-
     return render_template('index.html', collabs=collabs)
 
+# Abstracted new collaboration workflow that takes in a stage and collab_id
+# and generates the appropriate view and form.
+@app.route("/new/<stage>/<collab_id>", methods=["GET","POST"])
+def new_stage(stage, collab_id):
+
+
+
+    #If new collaboration started, create collaboration document in db
+    if collab_id == "none":
+        #Generate a collab_id with generate_id
+        collab_select = generate_id()
+    else:
+        #Pull empty collaborations from collab_id if not init stage
+        collab_select = Collaboration.objects(id=collab_id).first()
+    # Render the appropriate form given the stage
+    form_stage = form_dict[stage]
+    # If formdata is empty or not provided, this object is checked for attributes matching form field names,
+    # which will be used for field values.
+    form = form_stage(request.form, obj=collab_select)
+    if request.method == 'POST' and form.validate_on_submit():
+        del(form.csrf_token)
+        # Save whats on the form into the selected collab
+        form.populate_obj(collab_select)
+        collab_select.save()
+        #Checks to see if stage is closure to return back to homepage
+        if stage == 'closure':
+            return redirect('/')
+            # TODO: Insert flash message for collab confirmation
+        return redirect('/new/'+ stage_array[stage_array.index(stage)+1] +'/'+ collab_id )#redirect to the next stage
+    # Render the view given the stage
+    return render_template(stage + '.html', form=form, collab_id=collab_select.id)
 
 @app.route("/edit/<collab_id>", methods=["GET","POST"])
 def edit(collab_id):

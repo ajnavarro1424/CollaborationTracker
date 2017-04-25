@@ -82,9 +82,9 @@
           </button>
         </div>
         {% set side_bar = [
-          ('/init', 'init', 'Initiation', 'glyphicon-play'),
-          ('/details', 'details', 'Project Details', 'glyphicon-th-list'),
-          ('/contract', 'contract', 'Contract & Budget', 'glyphicon-piggy-bank'),
+          (url_for('new_stage', stage='init', collab_id=collab_id), 'init', 'Initiation', 'glyphicon-play'),
+          (url_for('new_stage', stage='details', collab_id=collab_id), 'details', 'Project Details', 'glyphicon-th-list'),
+          (url_for('new_stage', stage='contract', collab_id=collab_id), 'contract', 'Contract & Budget', 'glyphicon-piggy-bank'),
           ('/legal', 'legal', 'IRB Docs & Required Language', 'glyphicon-lock'),
           ('/sharing', 'sharing', 'Data Sharing', 'glyphicon-share'),
           ('/closure', 'closure', 'Closure', 'glyphicon-ok')
@@ -93,7 +93,7 @@
         <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
           <ul class="nav navbar-nav">
             {% for href, id, caption, glyphicon in side_bar %}
-            <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon {{ glyphicon|e }}"></span></a></li>
+            <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href }}">{{ caption|e }}<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon {{ glyphicon|e }}"></span></a></li>
             {% endfor %}
           </ul>
         </div>
@@ -110,6 +110,7 @@
         </div>
       </div>
     </div> <!--row -->
+    
     {% block extra_js %} {% endblock %}
   </body>
 </html>
