@@ -57,7 +57,7 @@ class Collaboration(mdb.Document):
     contract_needed = mdb.StringField()
     budget_needed = mdb.StringField()
     contract_notes = mdb.StringField()
-    #Legal
+    #Legal()
     approval_date = mdb.DateTimeField()
     approval_by = mdb.ReferenceField(SelectionField) # dropdown-menu
     # Legal continued(.pdf values)

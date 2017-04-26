@@ -15,7 +15,7 @@ study_dict = [
     {'name': '', 'orig_col': 'New interim Tag'},
     {'name': '', 'orig_col': 'ORIG TAG (CT Log)'},
     {'name': '', 'orig_col': 'ORIG TAG (Inv Init Log)'},
-    {'name': 'Entry date'},
+    {'name': 'Entry date', 'mdb_name' : 'entry_date'},
     {'name': 'Entered by'},
     {'name': 'Date Needed'},
     {'name': 'NP Study Sharing Approval Date'},
@@ -58,30 +58,30 @@ def import_data():
     db.drop_collection('clinical_studies')
     c1 = db.clinical_studies
     top_rows = 14  # The first 12 rows have no data??
-    dropdown_first = 4
-    dropdown_last = 13
     with open('DataSharingSpreadsheet.csv', 'rU') as csv_sheet:
         for (row_num, row) in enumerate(csv.reader(csv_sheet, delimiter=',')):#moving down
-            if row_num >= dropdown_first & row_num <=dropdown_last:  # skip the column names
+            if :  # skip the column names
 
 
-            sheet_dict = {}
-            for idx, key in enumerate(study_dict):
-                if key['name'] == '':  # skip certain columns
+            collab = Collaboration()
+            for column_number, study_dict_entry in enumerate(study_dict):
+                if study_dict_entry['name'] == '':  # skip certain columns
                     continue
-                if '/' in key['name']:  # split this column...
+                if '/' in study_dict_entry['name']:  # split this column...
                     # this is pretty horrible
                     # values are separated by commas, column names by slashes
                     # sometimes there are enough values, otherwise use ''
-                    vals = row[idx].strip().split(',')
-                    for kidx, k in enumerate(key['name'].split('/')):
-                        if len(vals) < kidx:
-                            sheet_dict[k] = vals[kidx]
+                    split_cell_vals = row[column_number].strip().split(',')
+                    for column_header_num, column_value in enumerate(study_dict_entry['name'].split('/')):
+                        if len(split_cell_vals) < column_header_num:
+                            sheet_dict[column_value] = split_cell_vals[column_header_num]
                         else:  # fill with a blank val
-                            sheet_dict[k] = ''
+                            sheet_dict[column_value] = ''
 
                 else:  # simple case
-                    sheet_dict[key['name']] = row[idx].strip()
+
+
+                    collab._fields[study_dict_entry['name']] = row[column_number].strip()
             c1.insert_one(sheet_dict)
 
 
