@@ -27,39 +27,45 @@ class SelectionField(mdb.Document):
 class Collaboration(mdb.Document):
     #Collaboration class will contain all the fields for all WF
     # Initiate Form values
-    entry_date = mdb.DateTimeField()
-    entered_by = mdb.StringField()
+    new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
+    entry_date = mdb.StringField(label = "Entry date")
+    entered_by = mdb.StringField(label = "Entered by")
     date_needed = mdb.DateTimeField()
+    institution = mdb.StringField()
     institution_contact = mdb.StringField()
-    pi = mdb.StringField()
-    reason = mdb.ReferenceField(SelectionField)#dropdown-menu
+    pi = mdb.StringField(label = "PI")
+    reason = mdb.ReferenceField(SelectionField, label = "Reason for Collaboration")#dropdown-menu
     category = mdb.ReferenceField(SelectionField) #dropdown-menu
     init_notes = mdb.StringField()
     # Details workflow (Flow2/Pg1 is Green-light or Red-light)
-    neuropace_contact = mdb.ReferenceField(SelectionField) #dropdown-menu
-    sharing_method = mdb.ReferenceField(SelectionField) #dropdown-menu
+    neuropace_contact = mdb.ReferenceField(SelectionField, label = "NeuroPace Contact") #dropdown-menu
+    sharing_method = mdb.ReferenceField(SelectionField, label = "Data Sharing Method") #dropdown-menu
     study_title = mdb.StringField()
-    dataset_description = mdb.ReferenceField(SelectionField) #dropdown-menu
-    phi_present = mdb.BooleanField()
-    share_type = mdb.ReferenceField(SelectionField) #dropdown-menu
-    sharing_language = mdb.ReferenceField(SelectionField) #dropdown-menu
+    description = mdb.StringField()
+    dataset_description = mdb.ReferenceField(SelectionField, label = "Data Set Description") #dropdown-menu
+    phi_present = mdb.BooleanField(label = "PHI Present")
+    share_type = mdb.ReferenceField(SelectionField, label = "Data Share Type") #dropdown-menu
+    sharing_language = mdb.ReferenceField(SelectionField, label = "Data Sharing Language") #dropdown-menu
     study_type = mdb.ReferenceField(SelectionField) #dropdown-menu
     study_identifier = mdb.StringField()
-    risk_level = mdb.ReferenceField(SelectionField) #dropdown-menu
-    accessories_needed = mdb.BooleanField()
-    accessories_language = mdb.ReferenceField(SelectionField) #dropdown-menu
-    single_multi_center = mdb.ReferenceField(SelectionField) #dropdown-menu
+    risk_level = mdb.ReferenceField(SelectionField, label = "Study Risk Level") #dropdown-menu
+    accessories_needed = mdb.BooleanField(label = "Research Accessories Needed?")
+    accessories_language = mdb.ReferenceField(SelectionField, label = "Research Accessories Language") #dropdown-menu
+    single_multi_center = mdb.ReferenceField(SelectionField, label = "Single or Multi-Center") #dropdown-menu
     detail_notes = mdb.StringField()
     #Contracts and Financials (Flow2/Pg3)
     funding_source = mdb.ReferenceField(SelectionField) #dropdown-menu
-    np_compensation = mdb.BooleanField()
-    np_consultant = mdb.BooleanField()
-    contract_needed = mdb.StringField()
-    budget_needed = mdb.StringField()
+    np_compensation = mdb.BooleanField(label = "Compensated by NP?")
+    np_consultant = mdb.BooleanField(label = "Consultant to NP?")
+    contract_needed = mdb.StringField(label = "Contract Needed?")
+    budget_needed = mdb.StringField(label = "Budget Needed?")
     contract_notes = mdb.StringField()
-    #Legal
-    approval_date = mdb.DateTimeField(label='NP Study Sharing Approval Date')
-    approval_by = mdb.ReferenceField(SelectionField) # dropdown-menu
+    #Legal(Flow4/Pg.4)
+    # Not Tracked values caused DateTimeField to fail.
+    approval_date = mdb.StringField(label='NP Study Sharing Approval Date')
+    approval_by = mdb.ReferenceField(SelectionField, label='NP Sharing Approval By') # dropdown-menu
+    irb_app_date = mdb.StringField(label = 'Initial IRB App Date')
+    irb_exp_date = mdb.StringField(lable = 'Latest IRB Exp Date')
     # Legal continued(.pdf values)
     pc_research_acc = mdb.BooleanField()
     pc_data_sharing = mdb.BooleanField()
@@ -69,13 +75,14 @@ class Collaboration(mdb.Document):
     legal_notes = mdb.StringField()
 
     #Closure
-    status = mdb.ReferenceField(SelectionField) # dropdown-menu
+    status = mdb.ReferenceField(SelectionField, label = "Contract status") # dropdown-menu
+    box_link = mdb.StringField(label = 'BOX link')
     closure_notes = mdb.StringField()
 
 def labelize(field):
-    if field.label:
+    if hasattr(field, "label"):
         return field.label
-    return field.__name__.replace('_', ' ').title()
+    return field.db_field.replace('_', ' ').title()
 
 def collab_model_form(model, only, field_args={}, **kwargs):
     for field_name in only:
@@ -96,11 +103,11 @@ def generate_id():
     return collab.save()
 
 form_dict = {
-            'init' : collab_model_form(Collaboration, ['entry_date', 'entered_by', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
-            'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes']),
+            'init' : collab_model_form(Collaboration, ['new_new_tag','entry_date', 'entered_by','institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
+            'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes']),
             'contract' : collab_model_form(Collaboration, ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed', 'budget_needed', 'status', 'contract_notes']),
-            'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'status', 'legal_notes']),
-            'closure' : collab_model_form(Collaboration, ['status', 'closure_notes'])
+            'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'irb_app_date', 'irb_app_date', 'status', 'legal_notes']),
+            'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'closure_notes'])
             }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
