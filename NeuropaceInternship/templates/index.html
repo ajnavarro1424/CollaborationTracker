@@ -15,9 +15,9 @@
       {% for collab in collabs %}
         <tr>
           <td>{{ collab.institution_contact }}</td>
-          <td>{{ collab.status }}</td>
+          <td>{{ collab.status.value }}</td>
           <td>{{ collab.pi }}</td>
-          <td><a href="/edit/{{ collab.id }}">Edit</a></td>
+          <td><a href="/new/init/{{ collab.id }}">Edit</a></td>
           <td><a href="">Destroy</a></td>
         </tr>
       {% endfor %}

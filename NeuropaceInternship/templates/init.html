@@ -17,7 +17,7 @@
   </head>
   <body>
        <h1>Initiation</h1>
-       <form action="{{url_for('new_stage', stage='details', collab_id=collab_id)}}" method="post">
+       <form action="{{url_for('new_stage', stage='init', collab_id=collab_id)}}" method="post">
            {{ with_errors(form.entry_date) }}
            {{ with_errors(form.entered_by) }}
            {{ with_errors(form.institution_contact) }}
