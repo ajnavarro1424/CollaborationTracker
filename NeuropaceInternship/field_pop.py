@@ -36,7 +36,7 @@ study_dict = [
     {'name': '', 'orig_col': 'ORIG TAG (Inv Init Log)'},
     {'name': 'Entry date', 'mdb_name' : 'entry_date'},
     {'name': 'Entered by', 'mdb_name' : 'entered_by'},
-    {'name': 'Date Needed', 'mdb_name' : 'entry_date'},
+    {'name': 'Date Needed', 'mdb_name' : 'date_needed'},
     {'name': 'NP Study Sharing Approval Date', 'mdb_name' : 'approval_date'},
     {'name': 'NP Sharing Approval By', 'mdb_name' : 'approval_by'},
     {'name': 'Status', 'mdb_name' : 'status'},
@@ -85,6 +85,7 @@ def import_data():
                     continue
                 mdb_col = study_dict_entry['mdb_name']
                 cell_value = row[column_number].strip()
+                print("Cell Value first assignment: x%sx" %cell_value)
                 if '/' in csv_col:  # split this column...
                     # this is pretty horrible
                     # values are separated by commas, column names by slashes
@@ -102,21 +103,17 @@ def import_data():
 
                 elif type(collab._fields[mdb_col]) == mdb.BooleanField:
                     print(type(collab._fields[mdb_col]))
-                    if cell_value == "Yes" or 'YES' or 'yes':
-                        cell_value = True
-                        collab._data[mdb_col] = cell_value
-                        collab.save
+                    if cell_value in ("Yes","YES",'yes'):
+                        collab._data[mdb_col] = True
                     else:
-                        cell_value = False
-                        collab._data[mdb_col] = cell_value
-                        collab.save
+                        collab._data[mdb_col] = False
 
                 else:  # simple case
                     collab._data[mdb_col] = cell_value
 
                 print((mdb_col))
                 print("x%sx" %cell_value)
-                collab.save()
+            collab.save()
 
 
 if __name__ == '__main__':
