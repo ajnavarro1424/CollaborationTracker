@@ -47,7 +47,7 @@ class Collaboration(mdb.Document):
     study_identifier = mdb.StringField()
     risk_level = mdb.ReferenceField(SelectionField) #dropdown-menu
     accessories_needed = mdb.BooleanField()
-    accessories_needed_language = mdb.ReferenceField(SelectionField) #dropdown-menu
+    accessories_language = mdb.ReferenceField(SelectionField) #dropdown-menu
     single_multi_center = mdb.ReferenceField(SelectionField) #dropdown-menu
     detail_notes = mdb.StringField()
     #Contracts and Financials (Flow2/Pg3)
@@ -95,7 +95,7 @@ def generate_id():
 
 form_dict = {
             'init' : collab_model_form(Collaboration, ['entry_date', 'entered_by', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
-            'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_needed_language', 'single_multi_center','status', 'detail_notes']),
+            'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes']),
             'contract' : collab_model_form(Collaboration, ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed', 'budget_needed', 'status', 'contract_notes']),
             'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'status', 'legal_notes']),
             'closure' : collab_model_form(Collaboration, ['status', 'closure_notes'])
