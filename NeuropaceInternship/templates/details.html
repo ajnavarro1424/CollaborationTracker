@@ -18,19 +18,19 @@
   <body>
        <h1>Project Details</h1>
        <form action="" method="post">
-           {{with_errors(form.entry_date)}}
-           <br>
-           <br>
-           {{with_errors(form.entered_by)}}
-           <br>
-           <br>
-           {{with_errors(form.institution_contact)}}
-           <br>
-           <br>
-           {{with_errors(form.pi)}}
+           {{with_errors(form.neuropace_contact)}}
+           {{with_errors(form.sharing_method)}}
+           {{with_errors(form.study_title)}}
+           {{with_errors(form.dataset_description)}}
+           {{with_errors(form.phi_present)}}
+           {{with_errors(form.share_type)}}
+           {{with_errors(form.study_type)}}
+           {{with_errors(form.study_identifier)}}
+           {{with_errors(form.risk_level)}}
+           {{with_errors(form.accessories_needed)}}
+           {{with_errors(form.accessories_language)}}
+           {{with_errors(form.single_multi_center)}}
            {{ form.csrf_token }}
-           <br>
-           <br>
            <input type="submit" name="" value="Submit Details">
        </form>
   </body>
