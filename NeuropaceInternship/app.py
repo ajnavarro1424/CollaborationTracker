@@ -85,7 +85,8 @@ def collab_model_form(model, only, field_args={}, **kwargs):
             field_args[field] = {'label': labelize(field)}
         if type(model._fields[field]) == mdb.ReferenceField:
             field_args[field] = {'label_attr' : 'value',
-                                 'queryset': SelectionField.objects(field_name=field)}
+                                 'queryset': SelectionField.objects(field_name=field),
+                                 'label' : labelize(field)}
     # print(field_args)
     return model_form(model, only=only, field_args=field_args, **kwargs)
 
