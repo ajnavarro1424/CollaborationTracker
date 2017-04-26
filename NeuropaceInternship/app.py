@@ -58,7 +58,7 @@ class Collaboration(mdb.Document):
     budget_needed = mdb.StringField()
     contract_notes = mdb.StringField()
     #Legal
-    approval_date = mdb.DateTimeField()
+    approval_date = mdb.DateTimeField(label='NP Study Sharing Approval Date')
     approval_by = mdb.ReferenceField(SelectionField) # dropdown-menu
     # Legal continued(.pdf values)
     pc_research_acc = mdb.BooleanField()
@@ -72,22 +72,23 @@ class Collaboration(mdb.Document):
     status = mdb.ReferenceField(SelectionField) # dropdown-menu
     closure_notes = mdb.StringField()
 
-
-def labelize(field_name):
-    return field_name.replace('_', ' ').title()
+def labelize(field):
+    if field.label:
+        return field.label
+    return field.__name__.replace('_', ' ').title()
 
 def collab_model_form(model, only, field_args={}, **kwargs):
-    for field in only:
+    for field_name in only:
+        field = model._fields[field_name]
         # generate/append field_args for each field; esp label
-        if field in field_args:
-            field_args[field]['label'] = labelize(field)
+        if field_name in field_args:
+            field_args[field_name]['label'] = labelize(field)
         else:
-            field_args[field] = {'label': labelize(field)}
-        if type(model._fields[field]) == mdb.ReferenceField:
-            field_args[field] = {'label_attr' : 'value',
-                                 'queryset': SelectionField.objects(field_name=field),
+            field_args[field_name] = {'label': labelize(field)}
+        if type(field) == mdb.ReferenceField:
+            field_args[field_name] = {'label_attr' : 'value',
+                                 'queryset': SelectionField.objects(field_name=field_name),
                                  'label' : labelize(field)}
-    # print(field_args)
     return model_form(model, only=only, field_args=field_args, **kwargs)
 
 def generate_id():
