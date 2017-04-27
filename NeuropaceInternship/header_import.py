@@ -48,7 +48,7 @@ study_dict = [
     {'name': 'Contract Status', 'mdb_name' : 'status'},
     {'name': 'Contract Approval Date', 'mdb_name' : 'approval_date'},
     {'name': 'BOX link', 'mdb_name' : 'box_link'},
-    {'name': 'Notes', 'width': 1000, 'mdb_name' : 'closure_notes'}]
+    {'name': 'Notes', 'width': 1000, 'mdb_name' : 'notes'}]
 
 # Loop through study_dict and match with Collaboration field names
 

@@ -30,7 +30,7 @@ class Collaboration(mdb.Document):
     new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
     entry_date = mdb.StringField(label = "Entry date")
     entered_by = mdb.StringField(label = "Entered by")
-    date_needed = mdb.DateTimeField()
+    date_needed = mdb.StringField()
     institution = mdb.StringField()
     institution_contact = mdb.StringField()
     pi = mdb.StringField(label = "PI")
@@ -57,27 +57,31 @@ class Collaboration(mdb.Document):
     funding_source = mdb.ReferenceField(SelectionField) #dropdown-menu
     np_compensation = mdb.BooleanField(label = "Compensated by NP?")
     np_consultant = mdb.BooleanField(label = "Consultant to NP?")
-    contract_needed = mdb.StringField(label = "Contract Needed?")
+    contract_needed = mdb.ReferenceField(SelectionField, label = "Contract Needed?") # dropdown-menu
     budget_needed = mdb.StringField(label = "Budget Needed?")
+    inv_sites_approval_req = mdb.StringField(label = "Inv Sites Approval Req'd")
+    vpn_access = mdb.StringField(label = "VPN access?")
+    contract_status = mdb.ReferenceField(SelectionField, label = "Contract Status")
+    contract_approval_date = mdb.StringField()
     contract_notes = mdb.StringField()
     #Legal(Flow4/Pg.4)
     # Not Tracked values caused DateTimeField to fail.
     approval_date = mdb.StringField(label='NP Study Sharing Approval Date')
     approval_by = mdb.ReferenceField(SelectionField, label='NP Sharing Approval By') # dropdown-menu
     irb_app_date = mdb.StringField(label = 'Initial IRB App Date')
-    irb_exp_date = mdb.StringField(lable = 'Latest IRB Exp Date')
+    irb_exp_date = mdb.StringField(label = 'Latest IRB Exp Date')
     # Legal continued(.pdf values)
     pc_research_acc = mdb.BooleanField()
     pc_data_sharing = mdb.BooleanField()
     icfc_data_sharing = mdb.BooleanField()
-    expiration_date = mdb.DateTimeField()
+    expiration_date = mdb.StringField()
     ds_racc_notes = mdb.StringField()
     legal_notes = mdb.StringField()
 
     #Closure
     status = mdb.ReferenceField(SelectionField, label = "Contract status") # dropdown-menu
     box_link = mdb.StringField(label = 'BOX link')
-    closure_notes = mdb.StringField()
+    notes = mdb.StringField()
 
 def labelize(field):
     if hasattr(field, "label"):
@@ -103,11 +107,11 @@ def generate_id():
     return collab.save()
 
 form_dict = {
-            'init' : collab_model_form(Collaboration, ['new_new_tag','entry_date', 'entered_by','institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
+            'init' : collab_model_form(Collaboration, ['new_new_tag','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
             'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes']),
             'contract' : collab_model_form(Collaboration, ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed', 'budget_needed', 'status', 'contract_notes']),
-            'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'irb_app_date', 'irb_app_date', 'status', 'legal_notes']),
-            'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'closure_notes'])
+            'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes']),
+            'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'notes'])
             }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]

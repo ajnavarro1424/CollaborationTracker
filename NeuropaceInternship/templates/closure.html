@@ -18,8 +18,9 @@
   <body>
        <h1>Closure</h1>
        <form action="" method="post">
-           {{with_errors(form.closure_notes)}}
            {{with_errors(form.status)}}
+           {{with_errors(form.box_link)}}
+           {{with_errors(form.notes)}}
            {{ form.csrf_token }}
            <input type="submit" name="" value="Submit Closure">
        </form>
