@@ -1,11 +1,17 @@
 # Importing flask packages
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_assets import Environment
 # Importing mongoengine and forms to our flask framework
 from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
-
 from flask_mongoengine.wtf import model_form
+
+from mongoengine import *
+from mongoengine import signals
+import blinker
+
+from datetime import datetime
+from time import gmtime, strftime
 
 # global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
@@ -25,6 +31,8 @@ class SelectionField(mdb.Document):
 
 # Model used to build our collection by passing our documents (document object)
 class Collaboration(mdb.Document):
+    archive = mdb.BooleanField(default = False)
+    date_mod = mdb.DateTimeField()
     #Collaboration class will contain all the fields for all WF
     # Initiate Form values
     new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
@@ -79,9 +87,10 @@ class Collaboration(mdb.Document):
     legal_notes = mdb.StringField()
 
     #Closure
-    status = mdb.ReferenceField(SelectionField, label = "Contract status") # dropdown-menu
+    status = mdb.ReferenceField(SelectionField, label = " Colaboration Status") # dropdown-menu
     box_link = mdb.StringField(label = 'BOX link')
     notes = mdb.StringField()
+
 
 def labelize(field):
     if hasattr(field, "label"):
@@ -106,21 +115,56 @@ def generate_id():
     collab = Collaboration()
     return collab.save()
 
+def update_modified(sender, document):
+    document.date_mod = datetime.utcnow()
+
+signals.pre_save.connect(update_modified)
+
+
 form_dict = {
-            'init' : collab_model_form(Collaboration, ['new_new_tag','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
+            'init' : collab_model_form(Collaboration, ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
             'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes']),
-            'contract' : collab_model_form(Collaboration, ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed', 'budget_needed', 'status', 'contract_notes']),
+            'contract' : collab_model_form(Collaboration, ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes']),
             'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes']),
             'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'notes'])
             }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
+
+
 # Controller and routes
+# Main function will return a different list of collabs based on path variables
 @app.route("/")
 def main():
-    collabs = Collaboration.objects
-    return render_template('index.html', collabs=collabs)
+    collabs = Collaboration.objects(archive = False)
+    collabs_archived = Collaboration.objects(archive = True)
+    return render_template('index.html', collabs=collabs, collabs_arch=collabs_archived)
 
+@app.route("/<list>")
+def list(list):
+    #Returns a specific list of collabs based on passed URL variable
+    if list == "all":
+        collabs = Collaboration.objects()
+        return render_template('index.html', collabs=collabs, list=list)
+    else:
+        collabs = Collaboration.objects(archive = False)
+        flash("The %s list does not exist" % list)
+        return render_template('index.html', collabs=collabs)
+
+@app.route("/archive/<collab_id>", methods=["GET"])
+def archive(collab_id):
+    # Pull collab for archiving
+    collab_select = Collaboration.objects(id=collab_id).first()
+    # Check the archive status and save opposite
+    if collab_select.archive ==  False:
+        collab_select.archive = True
+        flash('Collaboration %s successfully archived.' % collab_select.id)
+    else:
+        collab_select.archive = False
+        flash('Collaboration %s successfully restored.' % collab_select.id)
+    collab_select.save()
+    # redirect to the index page where the archived collab will have disappeared
+    return redirect('/')
 # Abstracted new collaboration workflow that takes in a stage and collab_id
 # and generates the appropriate view and form.
 @app.route("/new/<stage>/<collab_id>", methods=["GET","POST"])
@@ -144,9 +188,9 @@ def new_stage(stage, collab_id):
         collab_select.save()
         #Checks to see if stage is closure to return back to homepage
         if stage == 'closure':
+            flash("Collaboration %s saved in DB" %collab_select.id)
             return redirect('/')
-            # TODO: Insert flash message for collab confirmation
-
+        flash(f"Stage {stage.title()} saved for Collaboration {collab_select.id}")
         return redirect('/new/'+ stage_array[stage_array.index(stage)+1] +'/'+ collab_id )#redirect to the next stage
     # Render the view given the stage
     return render_template(stage + '.html', form=form, collab_id=collab_select.id)

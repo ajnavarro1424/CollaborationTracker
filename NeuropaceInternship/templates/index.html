@@ -1,41 +1,105 @@
 {% extends 'base_test.html' %}
 {% block content %}
-  <h1>Welcome to the Collaboration Station</h1>
-  <h2>All Collaborations</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th>Principal Investigator</th>
-        <th>Institution</th>
-
-        <th colspan="2">Options</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for collab in collabs %}
-        <tr>
-          <td>{{ collab.status.value }}</td>
-          <td>{{ collab.pi }}</td>
-          <td>{{ collab.institution }}</td>
-          <td><a href="/new/init/{{ collab.id }}">Edit</a></td>
-          <td><a href="">Destroy</a></td>
-        </tr>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+      {% for message in messages %}
+      <li>{{ message }}</li>
       {% endfor %}
-    </tbody>
-  </table>
-  <h2>User Collaborations</h2>
-  <table>
-    <tr>
-      <th>Institution Contact</th>
-      <th>Status</th>
-      <th>Principal Investigator</th>
-      <th colspan="2">Options</th>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </table>
+    </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if error %}
+   <p class=error><strong>Error:</strong> {{ error }}</p>
+  {% endif %}
+
+
+  <h1>Welcome to the Collaboration Station</h1>
+
+  <div class="row">
+    <div class="col-md-4">
+      <h2>Active Collaborations</h2>
+      <a href="/all">Show Archived</a>
+      <table>
+        <thead>
+          <tr>
+            <th>Date Created</th>
+            <th>Date Modified</th>
+            <th>Status</th>
+            <th>Principal Investigator</th>
+            <th>Institution</th>
+            {% if list == "all" %}
+              <th>Archived?</th>
+            {% endif %}
+            <th colspan="2">Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for collab in collabs %}
+            <tr>
+              <td>{{ collab.id.generation_time.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+              <td>{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+              <td>{{ collab.status.value }}</td>
+              <td>{{ collab.pi }}</td>
+              <td>{{ collab.institution }}</td>
+              {% if list == "all" %}
+                <td>{{ collab.archive}}</td>
+              {% endif %}
+              <td><a href="/new/init/{{ collab.id }}">Edit</a></td>
+              {% if collab.archive == False%}
+                <td><a href="/archive/{{ collab.id }}">Archive</a></td>
+              {% else %}
+                <td><a href="/archive/{{ collab.id }}">Restore</a></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <h2>User Collaborations</h2>
+      <table>
+        <tr>
+          <th>Institution Contact</th>
+          <th>Status</th>
+          <th>Principal Investigator</th>
+          <th colspan="2">Options</th>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-md-4">
+       <h2>Archived Collaborations</h2>
+       <table>
+         <tr>
+           <th>Status</th>
+           <th>Principal Investigator</th>
+           <th>Institution</th>
+           {% if list == "all" %}
+             <th>Archived?</th>
+           {% endif %}
+           <th colspan="2">Options</th>
+         </tr>
+         {% for collab in collabs_arch %}
+           <tr>
+              {% if collab.archive == True %}
+                <td>{{ collab.status.value }}</td>
+                <td>{{ collab.pi }}</td>
+                <td>{{ collab.institution }}</td>
+                {% if list == "all" %}
+                 <td>{{ collab.archive}}</td>
+                {% endif %}
+                <td><a href="/archive/{{ collab.id }}">Restore</a></td>
+            {% endif %}
+           </tr>
+         {% endfor %}
+       </table>
+    </div>
+  </div>
+
 {% endblock %}

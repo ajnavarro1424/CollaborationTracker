@@ -105,7 +105,22 @@
       </div>
       <div class='col-md-10' id="container">
         <div id="content">
-          {% block content %}{% endblock %}
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class=flashes>
+              {% for message in messages %}
+              <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          {% endwith %}
+
+          {% if error %}
+           <p class=error><strong>Error:</strong> {{ error }}</p>
+          {% endif %}
+
+          {% block content %}
+          {% endblock %}
         </div>
       </div>
     </div> <!--row -->

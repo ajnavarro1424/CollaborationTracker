@@ -68,16 +68,12 @@
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
+    <!-- Landing page content will be populated here -->
+    {% block content %}{% endblock %}
+    {% block body %}{% endblock %}
+    <!--  -->
 
-    <div class='row'>
-      <div class="col-md-1">
-      </div>
-      <div class='col-md-11' id="container">
-        <div id="content">
-          {% block content %}{% endblock %}
-        </div>
-      </div>
-    </div> <!--row -->
+
     {% block extra_js %} {% endblock %}
   </body>
 </html>
