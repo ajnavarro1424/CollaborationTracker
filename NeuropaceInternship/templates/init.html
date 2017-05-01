@@ -16,26 +16,42 @@
        <title>Initiation Page</title>
   </head>
   <body>
-    <h1>Initiation</h1>
-    <form action="{{ url_for('new_stage', stage='init', collab_id=collab_id) }}" method="post">
-      <div class="col-md-6">
-        {{ with_errors(form.entered_by) }}
-        {{ with_errors(form.entry_date) }}
-        {{ with_errors(form.date_needed) }}
-        <br>
-        <br>
-        {{ with_errors(form.category) }}
-        {{ with_errors(form.reason) }}
-      </div>
-      <div class="col-md-6">
-        {{ with_errors(form.institution) }}
-        {{ with_errors(form.institution_contact) }}
-        {{ with_errors(form.pi) }}
-      </div>
-      {{ with_errors(form.init_notes) }}
-      {{ with_errors(form.status) }}
-      {{ form.csrf_token }}
-      <input type="submit" name="" value="Submit Initiation">
-    </form>
+    <div class="container-fluid">
+      <form action="{{ url_for('new_stage', stage='init', collab_id=collab_id) }}" method="post">
+        <div class="row">
+          <div class="col-md-10">
+            <h1>Initiation</h1>
+          </div>
+          <div class="row">
+            <div class="col-md-3 form-group">
+              {{ with_errors(form.entered_by) }}
+              {{ with_errors(form.entry_date) }}
+              {{ with_errors(form.date_needed) }}
+            </div>
+            <div class="col-md-3 form-group verticalLine">
+              {{ with_errors(form.institution) }}
+              {{ with_errors(form.institution_contact) }}
+              {{ with_errors(form.pi) }}
+              {{ with_errors(form.category) }}
+              {{ with_errors(form.reason) }}
+            </div>
+            <div class="col-md-6">
+            </div>
+            <div class="row">
+              <div class="col-md-3 col-md-offset-1">
+                <fieldset>
+                  <legend>Collaboration Info</legend>
+                  {{ with_errors(form.init_notes) }}
+                  {{ form.csrf_token }}
+                  {{ with_errors(form.status) }}
+                </fieldset>
+                <br>
+                <input type="submit" name="" value="Submit Initiation">
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   </body>
 {% endblock %}

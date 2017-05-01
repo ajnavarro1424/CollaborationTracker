@@ -1,0 +1,19 @@
+.page_header {
+  text-align: center;
+}
+
+.page_footer {
+
+}
+
+textarea {
+  min-width: 100%;
+}
+
+select {
+  min-width: 100%;
+}
+
+.verticalLine {
+  border-right: thin solid grey;
+}
