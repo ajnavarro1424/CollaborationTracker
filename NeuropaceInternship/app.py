@@ -11,6 +11,7 @@ from mongoengine import signals
 import blinker
 
 from datetime import datetime
+import calendar
 from time import gmtime, strftime
 
 # global variable representing the entire app (Flask object called 'app')
@@ -23,12 +24,11 @@ assets = Environment(app)
 #MongoEngine setup
 mdb = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(mdb)
-# mdb.init_app(app)
+
 
 class SelectionField(mdb.Document):
     value = mdb.StringField()
     field_name = mdb.StringField()
-
 # Model used to build our collection by passing our documents (document object)
 class Collaboration(mdb.Document):
     archive = mdb.BooleanField(default = False)
@@ -91,6 +91,18 @@ class Collaboration(mdb.Document):
     box_link = mdb.StringField(label = 'BOX link')
     notes = mdb.StringField()
 
+    #Converts UTC time to local time
+    def utc_2_local(self, field):
+        TIME_FORMAT = '%Y-%m-%d %I:%M:%S'
+        timestamp =  calendar.timegm(field.timetuple())
+        local = datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
+        return local
+
+def update_modified(sender, document):
+    if document._class_name == 'Collaboration':
+        document.date_mod = datetime.today()
+
+signals.pre_save.connect(update_modified)
 
 def labelize(field):
     if hasattr(field, "label"):
@@ -115,10 +127,6 @@ def generate_id():
     collab = Collaboration()
     return collab.save()
 
-def update_modified(sender, document):
-    document.date_mod = datetime.utcnow()
-
-signals.pre_save.connect(update_modified)
 
 
 form_dict = {
@@ -151,6 +159,7 @@ def list(list):
         flash("The %s list does not exist" % list)
         return render_template('index.html', collabs=collabs)
 
+# Should be a POST, but as a link a GET is more convienent.
 @app.route("/archive/<collab_id>", methods=["GET"])
 def archive(collab_id):
     # Pull collab for archiving

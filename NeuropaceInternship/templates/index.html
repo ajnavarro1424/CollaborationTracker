@@ -14,9 +14,7 @@
    <p class=error><strong>Error:</strong> {{ error }}</p>
   {% endif %}
 
-
   <h1>Welcome to the Collaboration Station</h1>
-
   <div class="row">
     <div class="col-md-4">
       <h2>Active Collaborations</h2>
@@ -38,7 +36,7 @@
         <tbody>
           {% for collab in collabs %}
             <tr>
-              <td>{{ collab.id.generation_time.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+              <td>{{ collab.utc_2_local(collab.id.generation_time) }}</td>
               <td>{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
               <td>{{ collab.status.value }}</td>
               <td>{{ collab.pi }}</td>
