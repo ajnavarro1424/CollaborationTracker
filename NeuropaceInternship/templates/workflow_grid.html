@@ -1,0 +1,46 @@
+{% extends 'workflow.html' %}
+
+  {% macro with_errors(field) %}
+  <div class="form_field">{{ field.label }}:
+    {% if field.errors %}
+    {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
+    {{ field(class=css_class, **kwargs) }}
+    <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
+    {% else %}
+    {{ field(**kwargs) }}
+    {% endif %}
+  </div>
+  {% endmacro %}
+
+  {% block form_content %}
+    <head>
+      {% block title %}{% endblock %}
+    </head>
+    <body>
+      <div class="container-fluid">
+        {% block form_start %} {% endblock %}
+          <div class="row">
+            <div class="col-md-10">
+              {% block form_title %}{% endblock %}
+              <br>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                  {% block column1 %}{% endblock %}
+                </div>
+                <div class="col-md-3">
+                  {% block column2 %}{% endblock %}
+                </div>
+              <div class="col-md-3 col-md-offset-1 verticalLine">
+                <fieldset>
+                  <legend>Stage Review & Submit</legend>
+                    {% block review %}{% endblock %}
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </body>
+
+  {% endblock %}

@@ -1,76 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    {% block jquery %}
-      {% assets "js/jquery-3.2.1.min.js", "js/base.js" %}
-        <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous"></script>
-      {% endassets %}
-    {% endblock jquery %}
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    {% assets "css/base.css" %}
-      <link rel="stylesheet" href="{{ ASSET_URL }}"/>
-    {% endassets %}
-    {% assets "css/side_bar.css" %}
-      <link rel="stylesheet" href="{{ ASSET_URL }}"/>
-    {% endassets %}
-    {% block extra_css %}
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    {% endblock extra_css %}
-    <title>
-      {% block page_title %}
-      NeuroPace Research
-      {% endblock page_title %}
-    </title>
-  </head>
-
-  <body>
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          {% block logo %}
-            {% assets "icons/NP_logo.png" %}
-              <img class="navbar-brand" src="{{ ASSET_URL }}"/>
-            {% endassets %}
-          {% endblock %}
-          {% block topContent %}
-            <a class="navbar-brand" href="/">NeuroPace</a>
-            <h3> {% block text_title %}{% endblock %}</h3>
-          {% endblock %}
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav navbar">
-            <form class="navbar-form navbar-left">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search">
-              </div>
-              <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/new/init/none">Start Collaboration</a></li>
-            <li class="active"><a href="#">Audit Log <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#" onclick="$('#helpText').toggle();$('#helpLink').toggle();">Help?</a></li>
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
-    </nav>
-
+{% extends 'base_test.html' %}
     <!-- Sidebar for navigation -->
     {% block sidebar %}
+
     <nav class="navbar navbar-default sidebar" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -100,11 +31,11 @@
     </nav>
     {% endblock %}
 
+    {% block body %}
     <div class='row'>
-      <div class="col-md-2">
-      </div>
-      <div class='col-md-10' id="container">
+      <div class='col-md-10'>
         <div id="content">
+          <!--Flash Message Code  -->
           {% with messages = get_flashed_messages() %}
             {% if messages %}
             <ul class=flashes>
@@ -114,17 +45,16 @@
             </ul>
             {% endif %}
           {% endwith %}
-
           {% if error %}
            <p class=error><strong>Error:</strong> {{ error }}</p>
           {% endif %}
-
-          {% block content %}
+          <!--Flash Message Code  -->
+          <!-- Form Render Here -->
+          {% block form_content %}
           {% endblock %}
+          <!-- Form Render Here -->
         </div>
       </div>
     </div> <!--row -->
-
+    {% endblock %}
     {% block extra_js %} {% endblock %}
-  </body>
-</html>

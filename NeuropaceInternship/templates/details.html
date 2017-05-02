@@ -1,40 +1,53 @@
-{% extends 'workflow.html' %}
-{% set active_page = 'details'%}
-{% block content %}
-  {% macro with_errors(field) %}
-      <div class="form_field">{{ field.label }}:
-      {% if field.errors %}
-          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-          {{ field(class=css_class, **kwargs) }}
-          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-      {% else %}
-          {{ field(**kwargs) }}
-      {% endif %}
-      </div>
-  {% endmacro %}
-  <head>
-       <title>Project Details Page</title>
-  </head>
-  <body>
-       <h1>Project Details</h1>
-       <form action="" method="post">
-           {{with_errors(form.neuropace_contact)}}
-           {{with_errors(form.sharing_method)}}
-           {{with_errors(form.study_title)}}
-           {{with_errors(form.description)}}
-           {{with_errors(form.dataset_description)}}
-           {{with_errors(form.phi_present)}}
-           {{with_errors(form.share_type)}}
-           {{with_errors(form.sharing_language)}}
-           {{with_errors(form.study_type)}}
-           {{with_errors(form.study_identifier)}}
-           {{with_errors(form.risk_level)}}
-           {{with_errors(form.accessories_needed)}}
-           {{with_errors(form.accessories_language)}}
-           {{with_errors(form.single_multi_center)}}
-           {{with_errors(form.detail_notes)}}
-           {{ form.csrf_token }}
-           <input type="submit" name="" value="Submit Details">
-       </form>
-  </body>
-{% endblock %}
+{% extends 'workflow_grid.html' %}
+  {% set active_page = 'details'%}
+
+  {% block title %}
+    <title>Details</title>
+  {% endblock %}
+
+  {% block form_title %}
+    <h1 class="title_header">Details</h1>
+  {% endblock %}
+
+  {% block form_start %}
+  <form action="{{ url_for('new_stage', stage='details', collab_id=collab_id) }}" method="post">
+  {% endblock %}
+
+  {% block column1 %}
+    <div class="form-group">
+      {{ with_errors(form.neuropace_contact) }}
+      {{ with_errors(form.study_title) }}
+      {{ with_errors(form.description) }}
+    </div>
+    <div class="form-group">
+      {{ with_errors(form.share_type) }}
+      {{ with_errors(form.sharing_method) }}
+      {{ with_errors(form.sharing_language) }}
+    </div>
+    <div class="form-group">
+      {{ with_errors(form.study_type) }}
+      {{ with_errors(form.study_identifier) }}
+    </div>
+  {% endblock %}
+
+  {% block column2 %}
+    <div class="form-group">
+      {{ with_errors(form.dataset_description) }}
+      {{ with_errors(form.risk_level) }}
+      {{ with_errors(form.single_multi_center) }}
+    </div>
+    <div class="form-group">
+      {{ with_errors(form.accessories_language) }}
+    </div>
+    <div class="form-group">
+      {{ with_errors(form.accessories_needed) }}
+      {{ with_errors(form.phi_present) }}
+    </div>
+  {% endblock %}
+
+  {% block review %}
+    {{ with_errors(form.detail_notes) }}
+    {{ with_errors(form.status) }}
+    {{ form.csrf_token }}
+    <input type="submit" class="submit" value="Submit Details">
+  {% endblock %}
