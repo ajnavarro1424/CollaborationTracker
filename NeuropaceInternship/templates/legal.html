@@ -1,33 +1,35 @@
-{% extends 'workflow.html' %}
+{% extends 'workflow_grid.html' %}
 {% set active_page = 'legal'%}
-{% block content %}
-  {% macro with_errors(field) %}
-      <div class="form_field">{{ field.label }}:
-      {% if field.errors %}
-          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-          {{ field(class=css_class, **kwargs) }}
-          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-      {% else %}
-          {{ field(**kwargs) }}
-      {% endif %}
-      </div>
-  {% endmacro %}
-  <head>
-       <title>Legal Page</title>
-  </head>
-  <body>
-       <h1>IRB Docs & Required Language</h1>
-       <form action="" method="post">
-           {{with_errors(form.approval_date)}}
-           {{with_errors(form.approval_by)}}
-           {{with_errors(form.legal_notes)}}
-           {{with_errors(form.irb_app_date)}}
-           {{with_errors(form.irb_exp_date)}}
-           {{with_errors(form.status)}}
-           {{ form.csrf_token }}
-           <br>
-           <br>
-           <input type="submit" name="" value="Submit Legal">
-       </form>
-  </body>
+
+{% block title %}
+  <title>Legal</title>
+{% endblock %}
+
+{% block form_title %}
+  <h1 class="title_header">IRB Docs & Required Language</h1>
+{% endblock %}
+
+{% block form_start %}
+<form action="{{ url_for('new_stage', stage='legal', collab_id=collab_id) }}" method="post">
+{% endblock %}
+
+{% block column1 %}
+  <div class="form-group">
+    {{with_errors(form.approval_date)}}
+    {{with_errors(form.approval_by)}}
+  </div>
+{% endblock %}
+
+{% block column2 %}
+  <div class="form-group">
+    {{with_errors(form.irb_app_date)}}
+    {{with_errors(form.irb_exp_date)}}
+  </div>
+{% endblock %}
+
+{% block review %}
+  {{with_errors(form.legal_notes)}}
+  {{with_errors(form.status)}}
+  {{ form.csrf_token }}
+  <input type="submit" class="submit" value="Submit Legal">
 {% endblock %}

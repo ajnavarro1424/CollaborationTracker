@@ -1,57 +1,41 @@
-{% extends 'workflow.html' %}
-{% set active_page = 'init'%}
-{% block content %}
-  {% macro with_errors(field) %}
-      <div class="form_field">{{ field.label }}:
-      {% if field.errors %}
-          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-          {{ field(class=css_class, **kwargs) }}
-          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-      {% else %}
-          {{ field(**kwargs) }}
-      {% endif %}
-      </div>
-  {% endmacro %}
-  <head>
-       <title>Initiation Page</title>
-  </head>
-  <body>
-    <div class="container-fluid">
-      <form action="{{ url_for('new_stage', stage='init', collab_id=collab_id) }}" method="post">
-        <div class="row">
-          <div class="col-md-10">
-            <h1>Initiation</h1>
-          </div>
-          <div class="row">
-            <div class="col-md-3 form-group">
-              {{ with_errors(form.entered_by) }}
-              {{ with_errors(form.entry_date) }}
-              {{ with_errors(form.date_needed) }}
-            </div>
-            <div class="col-md-3 form-group verticalLine">
-              {{ with_errors(form.institution) }}
-              {{ with_errors(form.institution_contact) }}
-              {{ with_errors(form.pi) }}
-              {{ with_errors(form.category) }}
-              {{ with_errors(form.reason) }}
-            </div>
-            <div class="col-md-6">
-            </div>
-            <div class="row">
-              <div class="col-md-3 col-md-offset-1">
-                <fieldset>
-                  <legend>Collaboration Info</legend>
-                  {{ with_errors(form.init_notes) }}
-                  {{ form.csrf_token }}
-                  {{ with_errors(form.status) }}
-                </fieldset>
-                <br>
-                <input type="submit" name="" value="Submit Initiation">
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-  </body>
-{% endblock %}
+{% extends 'workflow_grid.html' %}
+  {% set active_page = 'init'%}
+
+  {% block title %}
+    <title>Initiation Page</title>
+  {% endblock %}
+
+  {% block form_title %}
+    <h1 class="title_header">Initiation</h1>
+  {% endblock %}
+
+  {% block form_start %}
+  <form action="{{ url_for('new_stage', stage='init', collab_id=collab_id) }}" method="post">
+    {% endblock %}
+
+  {% block column1 %}
+  <div class="form-group">
+    {{ with_errors(form.entered_by) }}
+    {{ with_errors(form.entry_date) }}
+    {{ with_errors(form.date_needed) }}
+  </div>
+  {% endblock %}
+
+  {% block column2 %}
+  <div class="form-group">
+    {{ with_errors(form.institution) }}
+    {{ with_errors(form.institution_contact) }}
+    {{ with_errors(form.pi) }}
+    {{ with_errors(form.category) }}
+    {{ with_errors(form.reason) }}
+  </div>
+  {% endblock %}
+
+  {% block review %}
+  <div class="form-group">
+    {{ with_errors(form.init_notes) }}
+    {{ with_errors(form.status) }}
+    {{ form.csrf_token }}
+  </div>
+    <input class="submit" type="submit" value="Submit Initiation">
+  {% endblock %}

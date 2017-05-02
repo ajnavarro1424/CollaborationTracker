@@ -1,33 +1,36 @@
-{% extends 'workflow.html' %}
+{% extends 'workflow_grid.html' %}
 {% set active_page = 'contract'%}
-{% block content %}
-  {% macro with_errors(field) %}
-      <div class="form_field">{{ field.label }}:
-      {% if field.errors %}
-          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-          {{ field(class=css_class, **kwargs) }}
-          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-      {% else %}
-          {{ field(**kwargs) }}
-      {% endif %}
-      </div>
-  {% endmacro %}
-  <head>
-       <title>Contract Page</title>
-  </head>
-  <body>
-       <h1>Contract</h1>
-       <form action="" method="post">
-           {{with_errors(form.funding_source)}}
-           {{with_errors(form.np_consultant)}}
-           {{with_errors(form.np_compensation)}}
-           {{with_errors(form.contract_needed)}}
-           {{with_errors(form.budget_needed)}}
-           {{with_errors(form.contract_notes)}}
-           {{with_errors(form.status)}}
-           {{ form.csrf_token }}
 
-           <input type="submit" name="" value="Submit Contract">
-       </form>
-  </body>
+{% block title %}
+  <title>Contract</title>
+{% endblock %}
+
+{% block form_title %}
+  <h1 class="title_header">Contract</h1>
+{% endblock %}
+
+{% block form_start %}
+<form action="{{ url_for('new_stage', stage='contract', collab_id=collab_id) }}" method="post">
+{% endblock %}
+
+{% block column1 %}
+  <div class="form-group">
+    {{with_errors(form.funding_source)}}
+    {{with_errors(form.np_consultant)}}
+    {{with_errors(form.np_compensation)}}
+  </div>
+{% endblock %}
+
+{% block column2 %}
+  <div class="form-group">
+    {{with_errors(form.contract_needed)}}
+    {{with_errors(form.budget_needed)}}
+  </div>
+{% endblock %}
+
+{% block review %}
+  {{with_errors(form.contract_notes)}}
+  {{with_errors(form.status)}}
+  {{ form.csrf_token }}
+  <input type="submit" class="submit" value="Submit Contract">
 {% endblock %}

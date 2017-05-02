@@ -7,13 +7,31 @@
 }
 
 textarea {
-  min-width: 100%;
+  min-width: 95%;
+  height: 23px;
 }
 
 select {
-  min-width: 100%;
+  min-width: 95%;
 }
 
 .verticalLine {
-  border-right: thin solid grey;
+  border-left: thin solid grey;
+}
+
+.title_header {
+  text-align: center;
+}
+
+.submit_footer {
+  text-align: right;
+}
+
+/*.form-group {
+  border-bottom: thin solid black;
+}*/
+
+.submit {
+  margin-top: 30px;
+  float:right;
 }

@@ -1,28 +1,33 @@
-{% extends 'workflow.html' %}
+{% extends 'workflow_grid.html' %}
 {% set active_page = 'closure'%}
-{% block content %}
-  {% macro with_errors(field) %}
-      <div class="form_field">{{ field.label }}:
-      {% if field.errors %}
-          {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-          {{ field(class=css_class, **kwargs) }}
-          <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
-      {% else %}
-          {{ field(**kwargs) }}
-      {% endif %}
-      </div>
-  {% endmacro %}
-  <head>
-       <title>Closure Page</title>
-  </head>
-  <body>
-       <h1>Closure</h1>
-       <form action="" method="post">
-           {{with_errors(form.status)}}
-           {{with_errors(form.box_link)}}
-           {{with_errors(form.notes)}}
-           {{ form.csrf_token }}
-           <input type="submit" name="" value="Submit Closure">
-       </form>
-  </body>
+
+{% block title %}
+  <title>Closure</title>
+{% endblock %}
+
+{% block form_title %}
+  <h1 class="title_header">Closure</h1>
+{% endblock %}
+
+{% block form_start %}
+  <form action="{{ url_for('new_stage', stage='closure', collab_id=collab_id) }}" method="post">
+{% endblock %}
+
+{% block column1 %}
+  <div class="form-group">
+    {{with_errors(form.box_link)}}
+  </div>
+{% endblock %}
+
+{% block column2 %}
+  <div class="form-group">
+
+  </div>
+{% endblock %}
+
+{% block review %}
+  {{with_errors(form.notes)}}
+  {{with_errors(form.status)}}
+  {{ form.csrf_token }}
+  <input type="submit" class="submit" value="Submit Closure">
 {% endblock %}

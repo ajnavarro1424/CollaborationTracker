@@ -41,10 +41,10 @@ class Collaboration(mdb.Document):
     date_needed = mdb.StringField()
     institution = mdb.StringField()
     institution_contact = mdb.StringField()
-    pi = mdb.StringField(label = "PI")
+    pi = mdb.StringField(label = "Primary Investigator")
     reason = mdb.ReferenceField(SelectionField, label = "Reason for Collaboration")#dropdown-menu
     category = mdb.ReferenceField(SelectionField) #dropdown-menu
-    init_notes = mdb.StringField()
+    init_notes = mdb.StringField(label = "Initiation Notes")
     # Details workflow (Flow2/Pg1 is Green-light or Red-light)
     neuropace_contact = mdb.ReferenceField(SelectionField, label = "NeuroPace Contact") #dropdown-menu
     sharing_method = mdb.ReferenceField(SelectionField, label = "Data Sharing Method") #dropdown-menu
@@ -87,7 +87,7 @@ class Collaboration(mdb.Document):
     legal_notes = mdb.StringField()
 
     #Closure
-    status = mdb.ReferenceField(SelectionField, label = " Colaboration Status") # dropdown-menu
+    status = mdb.ReferenceField(SelectionField, label = "Collaboration Status") # dropdown-menu
     box_link = mdb.StringField(label = 'BOX link')
     notes = mdb.StringField()
 
@@ -202,7 +202,8 @@ def new_stage(stage, collab_id):
         flash(f"Stage {stage.title()} saved for Collaboration {collab_select.id}")
         return redirect('/new/'+ stage_array[stage_array.index(stage)+1] +'/'+ collab_id )#redirect to the next stage
     # Render the view given the stage
-    return render_template(stage + '.html', form=form, collab_id=collab_select.id)
+    print(stage)
+    return render_template(stage + '.html', form=form, collab_id=collab_select.id, stage=stage)
 
 
 @app.route("/audit")

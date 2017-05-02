@@ -17,6 +17,9 @@
     {% assets "css/side_bar.css" %}
       <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
+    {% assets "css/workflow.css" %}
+      <link rel="stylesheet" href="{{ ASSET_URL }}"/>
+    {% endassets %}
     {% block extra_css %}
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     {% endblock extra_css %}
@@ -69,11 +72,9 @@
       </div><!-- /.container-fluid -->
     </nav>
     <!-- Landing page content will be populated here -->
-    {% block content %}{% endblock %}
+    {% block content%}{% endblock %}
+    {% block sidebar %}{% endblock %}
     {% block body %}{% endblock %}
-    <!--  -->
-
-
     {% block extra_js %} {% endblock %}
   </body>
 </html>
