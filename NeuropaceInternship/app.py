@@ -1,12 +1,12 @@
 # Importing flask packages
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_assets import Environment
 # Importing mongoengine and forms to our flask framework
 from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_mongoengine.wtf import model_form
-
-from flask_login import UserMixin, LoginManager, login_user
+# Packages for the login functionality
+from flask_login import UserMixin, LoginManager, login_user, logout_user
 from urllib.parse import urlparse, urljoin
 
 from mongoengine import *
@@ -35,11 +35,8 @@ login_manager.init_app(app)
 class User(mdb.Document, UserMixin):
     username = mdb.StringField(pk = True)
     password = mdb.StringField()
-
-    def get_id():
-        return self.username
-
-
+    def get_id(self):
+     return self.username
 
 class SelectionField(mdb.Document):
     value = mdb.StringField()
@@ -113,13 +110,23 @@ class Collaboration(mdb.Document):
         local = datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
         return local
 
+class Change(mdb.EmbeddedDocument):
+    field = mdb.StringField()
+    previous = mdb.StringField()
+    current = mdb.StringField()
+
+class Audit(mdb.Document):
+    date_change = mdb.DateTimeField()
+    username = mdb.StringField()
+    collab_ref = mdb.StringField()
+    change_list = mdb.ListField(mdb.EmbeddedDocumentField(Change))
+
+
+
 @login_manager.user_loader
 def load_user(user_id):
-    user = User.objects(username = user_id).first()
-    if user is not None:
-        return user
-    else:
-        return
+    return User.objects(username=user_id).first()
+
 
 def update_modified(sender, document):
     if document._class_name == 'Collaboration':
@@ -171,19 +178,24 @@ def is_safe_url(target):
 @app.route('/login/<username>', methods=['GET', 'POST'])
 def login(username):
     # Find or create a user with the given username...
-    user = load_user(username)
-    login_user(user)
-    flash('Logged in successfully.')
-    next = request.args.get('next')
-    if not is_safe_url(next):
-        return flask.abort(400)
-    return flask.redirect(next or flask.url_for('index'))
-    return flask.render_template('index.html', user=user)
+    user = User.objects(username = username).first()
+    if user is not None:
+        login_user(user)
+        next = request.args.get('next')
+        if not is_safe_url(next):
+            flash('URL is not safe, hide your kids, hide your wife.')
+            return flask.abort(400)
+        flash('Logged in successfully.')
+        return redirect(next or url_for('main'))
+    else:
+        flash('Login failed. Try again.')
+        return redirect("/")
 
 @app.route("/logout")
 # @login_required
 def logout():
     logout_user()
+    flash('You are successfully logged out.')
     return redirect("/")
 
 
@@ -230,8 +242,10 @@ def new_stage(stage, collab_id):
         #Generate a collab_id with generate_id
         collab_select = generate_id()
     else:
-        #Pull empty collaborations from collab_id if not init stage
+        #Select the collab, given the collab_id(could be blank, or populated)
         collab_select = Collaboration.objects(id=collab_id).first()
+        #Create a duplicate object, for comparision for audit log
+        collab_previous = Collaboration.objects(id=collab_id).first()
     # Render the appropriate form given the stage
     form_stage = form_dict[stage]
     # If formdata is empty or not provided, this object is checked for attributes matching form field names,
@@ -240,16 +254,39 @@ def new_stage(stage, collab_id):
     if request.method == 'POST' and form.validate_on_submit():
         del(form.csrf_token)
         # Save whats on the form into the selected collab
+        # Check to see if there were changes to any fields, if so, save them in an audit doc
         form.populate_obj(collab_select)
+        form_current = form._fields
         collab_select.save()
-        #Checks to see if stage is closure to return back to homepage
+        # raise("gimme console")
+        #Look through both dictionaries, if the key/value pairs are different save them audit document
+        # Checks to see if stage is closure to return back to homepage
+        change_list = []
+        for k in collab_previous:
+            #Search the previous key in select, it should be there...
+            if k in collab_select:
+                # Compares SelectionField values between previous&selection
+                if type(collab_previous[k]) == SelectionField:
+                    if collab_previous[k].value != collab_select[k].value:
+                        change = Change(field = k, previous = collab_previous[k].value, current = collab_select[k].value)
+                        change_list.append(change)
+                # Compares non-SelectionField values between previous&selection`
+                elif collab_previous[k] != collab_select[k]:
+                    #TODO if statment to ignore date_mod
+                    change = Change(field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
+                    change_list.append(change)
+        # If there are changes, create an audit object and save both
+        if len(change_list) > 0:
+            audit = Audit(date_change = datetime.today(), collab_ref = str(collab_select.id), change_list = change_list)
+            audit.save()
+        # raise "wtf changelist??"
         if stage == 'closure':
             flash("Collaboration %s saved in DB" %collab_select.id)
             return redirect('/')
         flash(f"Stage {stage.title()} saved for Collaboration {collab_select.id}")
         return redirect('/new/'+ stage_array[stage_array.index(stage)+1] +'/'+ collab_id )#redirect to the next stage
     # Render the view given the stage
-    print(stage)
+
     return render_template(stage + '.html', form=form, collab_id=collab_select.id, stage=stage)
 
 

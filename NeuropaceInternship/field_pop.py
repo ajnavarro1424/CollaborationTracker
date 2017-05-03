@@ -1,6 +1,8 @@
 from app import Collaboration, SelectionField, update_modified, User
+# Packages for the login functionality - copied from appy.py because login_required wasn't being recognized without explicitly calling it here.
 from flask_login import UserMixin, LoginManager, login_required
 from urllib.parse import urlparse, urljoin
+
 from app import mdb
 import csv
 
@@ -29,6 +31,8 @@ def field_pop():
     #Delete existing collecdtions in the test database
     Collaboration.drop_collection()
     SelectionField.drop_collection()
+    User.drop_collection()
+    
     for k, v in dropdown_dict.items():
         for av in v:
             selection = SelectionField(field_name=k, value=av)
