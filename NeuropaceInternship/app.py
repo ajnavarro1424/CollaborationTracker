@@ -6,6 +6,9 @@ from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_mongoengine.wtf import model_form
 
+from flask_login import UserMixin, LoginManager, login_user
+from urllib.parse import urlparse, urljoin
+
 from mongoengine import *
 from mongoengine import signals
 import blinker
@@ -24,6 +27,18 @@ assets = Environment(app)
 #MongoEngine setup
 mdb = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(mdb)
+
+# Flask-Login setup
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class User(mdb.Document, UserMixin):
+    username = mdb.StringField(pk = True)
+    password = mdb.StringField()
+
+    def get_id():
+        return self.username
+
 
 
 class SelectionField(mdb.Document):
@@ -98,6 +113,14 @@ class Collaboration(mdb.Document):
         local = datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
         return local
 
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.objects(username = user_id).first()
+    if user is not None:
+        return user
+    else:
+        return
+
 def update_modified(sender, document):
     if document._class_name == 'Collaboration':
         document.date_mod = datetime.today()
@@ -138,6 +161,30 @@ form_dict = {
             }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+@app.route('/login/<username>', methods=['GET', 'POST'])
+def login(username):
+    # Find or create a user with the given username...
+    user = load_user(username)
+    login_user(user)
+    flash('Logged in successfully.')
+    next = request.args.get('next')
+    if not is_safe_url(next):
+        return flask.abort(400)
+    return flask.redirect(next or flask.url_for('index'))
+    return flask.render_template('index.html', user=user)
+
+@app.route("/logout")
+# @login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 
 # Controller and routes

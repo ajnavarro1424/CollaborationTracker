@@ -1,6 +1,10 @@
-from app import Collaboration, SelectionField, update_modified
+from app import Collaboration, SelectionField, update_modified, User
+from flask_login import UserMixin, LoginManager, login_required
+from urllib.parse import urlparse, urljoin
 from app import mdb
 import csv
+
+
 #Create the field_name and value pairs for the dropdows fields in the database
 dropdown_dict = {
                 'reason' : ['N/A', 'Collaboration', 'Grant Proposal', 'Grant', 'Product Development', 'Publication', 'Research', 'Study'],
@@ -29,6 +33,12 @@ def field_pop():
         for av in v:
             selection = SelectionField(field_name=k, value=av)
             selection.save()
+
+    # Create a couple very cool(sorry kaz) users in the db
+    alex = User(username="ajnavarro1424", password="cholula")
+    luke = User(username="bauer123", password="frisbee")
+    alex.save()
+    luke.save()
 
 
 
