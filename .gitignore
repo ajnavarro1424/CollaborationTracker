@@ -1,2 +1,4 @@
 venv
 .DS_Store
+__pycache__/
+NeuropaceInternship/__pycache__
