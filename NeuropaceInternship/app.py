@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_mongoengine.wtf import model_form
 # Packages for the login functionality
-from flask_login import UserMixin, LoginManager, login_user, logout_user
+from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse, urljoin
 
 from mongoengine import *
@@ -111,6 +111,7 @@ class Collaboration(mdb.Document):
         return local
 
 class Change(mdb.EmbeddedDocument):
+    stage = mdb.StringField()
     field = mdb.StringField()
     previous = mdb.StringField()
     current = mdb.StringField()
@@ -150,7 +151,9 @@ def collab_model_form(model, only, field_args={}, **kwargs):
         if type(field) == mdb.ReferenceField:
             field_args[field_name] = {'label_attr' : 'value',
                                  'queryset': SelectionField.objects(field_name=field_name),
-                                 'label' : labelize(field)}
+                                 'label' : labelize(field),
+                                 'allow_blank':True,
+                                 'blank_text':u'--please please choose--'}
     return model_form(model, only=only, field_args=field_args, **kwargs)
 
 def generate_id():
@@ -220,6 +223,7 @@ def list(list):
 
 # Should be a POST, but as a link a GET is more convienent.
 @app.route("/archive/<collab_id>", methods=["GET"])
+@login_required
 def archive(collab_id):
     # Pull collab for archiving
     collab_select = Collaboration.objects(id=collab_id).first()
@@ -236,6 +240,7 @@ def archive(collab_id):
 # Abstracted new collaboration workflow that takes in a stage and collab_id
 # and generates the appropriate view and form.
 @app.route("/new/<stage>/<collab_id>", methods=["GET","POST"])
+@login_required
 def new_stage(stage, collab_id):
     #If new collaboration started, create collaboration document in db
     if collab_id == "none":
@@ -265,21 +270,40 @@ def new_stage(stage, collab_id):
         for k in collab_previous:
             #Search the previous key in select, it should be there...
             if k in collab_select:
+                # Catch special cases where collab_previous = None -> "", SelectionField, "String"
+                # if collab_previous[k] is not None:
                 # Compares SelectionField values between previous&selection
-                if type(collab_previous[k]) == SelectionField:
-                    if collab_previous[k].value != collab_select[k].value:
-                        change = Change(field = k, previous = collab_previous[k].value, current = collab_select[k].value)
-                        change_list.append(change)
-                # Compares non-SelectionField values between previous&selection`
-                elif collab_previous[k] != collab_select[k]:
-                    #TODO if statment to ignore date_mod
-                    change = Change(field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
+                print(k)
+                print(type(collab_previous[k]))
+                print(collab_previous[k])
+                print(collab_select[k])
+
+                if collab_previous[k] is None and type(collab_select[k]) ==  SelectionField:
+                    print("none to SelectionField object")
+                    change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k].value))
                     change_list.append(change)
+
+                elif type(collab_previous[k]) == SelectionField :
+                    if collab_previous[k].value != collab_select[k].value:
+                        print("inside sleection field and different")
+                        change = Change(stage = stage, field = k, previous = str(collab_previous[k].value), current = str(collab_select[k].value))
+                        change_list.append(change)
+                # Compares non-SelectionField values between previous&selection, if they are not date_mod
+                elif k != 'date_mod' and collab_previous[k] != collab_select[k]:
+                    if collab_previous[k] is None and collab_select[k] != "":
+                        change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
+                        change_list.append(change)
+                    elif collab_previous[k] is not None and collab_select[k] != "":
+                        change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
+                        change_list.append(change)
+
         # If there are changes, create an audit object and save both
         if len(change_list) > 0:
-            audit = Audit(date_change = datetime.today(), collab_ref = str(collab_select.id), change_list = change_list)
+            audit = Audit(date_change = datetime.today(), collab_ref = str(collab_select.id), username = current_user.username, change_list = change_list)
+            print("about to save audit wooh")
             audit.save()
-        # raise "wtf changelist??"
+            # raise "wtf selection field object??"
+
         if stage == 'closure':
             flash("Collaboration %s saved in DB" %collab_select.id)
             return redirect('/')
@@ -291,7 +315,11 @@ def new_stage(stage, collab_id):
 
 
 @app.route("/audit")
-def audit():pass
+@login_required
+def audit():
+    audits = Audit.objects()
+    return render_template('audit.html', audits=audits)
+
 
 @app.route("/reports")
 def reports():pass
