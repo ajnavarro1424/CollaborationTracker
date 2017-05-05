@@ -1,4 +1,3 @@
-
 .navbar-user
 {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -8,4 +7,8 @@
     left: 0;
     text-align: center;
     margin:0 auto;
+
+.table-date-td{
+	width: 16%;
+
 }
