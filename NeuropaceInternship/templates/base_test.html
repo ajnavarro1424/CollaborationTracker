@@ -11,9 +11,12 @@
       {% endassets %}
     {% endblock jquery %}
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    {% block extra_css %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    {% endblock extra_css %}
+    {% block extra_css1 %}
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    {% endblock extra_css1 %}
+    {% block extra_css2 %}
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    {% endblock extra_css2 %}
     {% assets "css/base.css" %}
       <link rel="stylesheet" href="{{ ASSET_URL }}"/>
     {% endassets %}
@@ -25,12 +28,12 @@
     {% endassets %}
     <title>
       {% block page_title %}
-      NeuroPace Research
+        NeuroPace Research
       {% endblock page_title %}
     </title>
   </head>
 
-  <body id="boostrap_overrides">
+  <body>
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -50,7 +53,7 @@
             <a class="navbar-brand" href="/">NeuroPace</a>
             <h3> {% block text_title %}{% endblock %}</h3>
           {% endblock %}
-          <p class="navbar-user">Current User : {{current_user.username}}</p>
+
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -59,12 +62,11 @@
             <form class="navbar-form navbar-left">
               <div class="form-group">
                 <input type="text" class="form-control" placeholder="Search">
+                <button type="submit" class="btn btn-default">Submit</button>
               </div>
-              <button type="submit" class="btn btn-default">Submit</button>
             </form>
           </ul>
-
-
+          <h5 class="navbar-text">Current User: {{ current_user.username }}</h5>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="/new/init/none">Start Collaboration</a></li>
             <li class="active"><a href="/audit">Audit Log<span class="sr-only">(current)</span></a></li>
