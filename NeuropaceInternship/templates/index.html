@@ -35,9 +35,6 @@
               <th>Description</th>
               <th>IRB Application Date</th>
               <th>IRB Expiration Date</th>
-              {% if list == "all" %}
-                <th>Archived?</th>
-              {% endif %}
               <th colspan="3" style="text-align: center">Actions</th>
             </tr>
           </thead>
@@ -55,9 +52,6 @@
                 <td>{{ collab.description}}</td>
                 <td class="table-date-td">{{ collab.irb_app_date }}</td>
                 <td class="table-date-td">{{ collab.irb_exp_date }}</td>
-                {% if list == "all" %}
-                  <td>{{ collab.archive}}</td>
-                {% endif %}
                 <td>
                   <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                 </td>
