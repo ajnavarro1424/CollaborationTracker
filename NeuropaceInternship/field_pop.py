@@ -1,6 +1,12 @@
-from app import Collaboration, SelectionField, update_modified
+from app import Collaboration, SelectionField, update_modified, User, Audit
+# Packages for the login functionality - copied from appy.py because login_required wasn't being recognized without explicitly calling it here.
+from flask_login import UserMixin, LoginManager, login_required
+from urllib.parse import urlparse, urljoin
+
 from app import mdb
 import csv
+
+
 #Create the field_name and value pairs for the dropdows fields in the database
 dropdown_dict = {
                 'reason' : ['N/A', 'Collaboration', 'Grant Proposal', 'Grant', 'Product Development', 'Publication', 'Research', 'Study'],
@@ -25,10 +31,19 @@ def field_pop():
     #Delete existing collecdtions in the test database
     Collaboration.drop_collection()
     SelectionField.drop_collection()
+    User.drop_collection()
+    Audit.drop_collection()
+
     for k, v in dropdown_dict.items():
         for av in v:
             selection = SelectionField(field_name=k, value=av)
             selection.save()
+
+    # Create a couple very cool(sorry kaz) users in the db
+    alex = User(username="ajnavarro1424", password="cholula")
+    luke = User(username="bauer123", password="frisbee")
+    alex.save()
+    luke.save()
 
 
 
@@ -96,9 +111,6 @@ def import_data():
                     cell_value = row[column_number].strip()
 
                     if '/' in csv_col: # split this column...
-                        # print(collab._fields[mdb_col])
-                        print(mdb_col)
-                        print(cell_value)
                         # this is pretty horrible
                         # values are separated by commas, column names by slashes
                         # sometimes there are enough values, otherwise use ''
@@ -110,26 +122,19 @@ def import_data():
                                 collab._data[column_value] = ''
 
                     elif type(collab._fields[mdb_col]) == mdb.ReferenceField:
-                        print(collab._fields[mdb_col])
-                        print(mdb_col)
-                        print(cell_value)
+
                         # print(SelectionField.objects(field_name= mdb_col, value__iexact = cell_value).first().value)
                         if SelectionField.objects(field_name= mdb_col, value__iexact = cell_value).first() is not None:
                             collab._data[mdb_col] = SelectionField.objects(field_name= mdb_col, value__iexact = cell_value).first()
 
                     elif type(collab._fields[mdb_col]) == mdb.BooleanField:
-                        print(collab._fields[mdb_col])
-                        print(mdb_col)
-                        print(cell_value)
+
                         if cell_value in ("Yes","YES",'yes'):
                             collab._data[mdb_col] = True
                         else:
                             collab._data[mdb_col] = False
 
                     else:  # simple case
-                        print(collab._fields[mdb_col])
-                        print(mdb_col)
-                        print(cell_value)
                         collab._data[mdb_col] = cell_value
 
                     # print((mdb_col))
