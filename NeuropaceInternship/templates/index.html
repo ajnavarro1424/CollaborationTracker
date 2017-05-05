@@ -14,94 +14,109 @@
    <p class=error><strong>Error:</strong> {{ error }}</p>
   {% endif %}
 
-  <h1>Welcome to the Collaboration Station</h1>
-  <div class="row">
-    <div class="col-md-8 col-md-offset-2">
-      <h2>Active Collaborations</h2>
-      <a href="/all">Show Archived</a>
-      <table class="table table-striped table-bordered table-sm">
-
-        <thead>
+  <div class="container-fluid">
+    <div class="col-md-12">
+      <h1>NeuroPace Colalboration Tracker</h1>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Active Collaborations</h2>
+        <a href="/all">Show Archived</a>
+        <table class="table table-striped table-bordered table-sm table-responsive">
+          <thead>
+            <tr>
+              <th>Date Created</th>
+              <th>Date Modified</th>
+              <th>Status</th>
+              <th>Study Identifier</th>
+              <th>NeuroPace Contact</th>
+              <th>Primary Investigator</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>IRB Application Date</th>
+              <th>IRB Expiration Date</th>
+              <th colspan="3" style="text-align: center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for collab in collabs %}
+              <tr>
+                <td class="table-date-td">{{ collab.utc_2_local(collab.id.generation_time) }}</td>
+                <td class="table-date-td">{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+                <td>{{ collab.status.value }}</td>
+                <td>{{ collab.study_identifier}}</td>
+                <td>{{ collab.neuropace_contact.value}}</td>
+                <!--This may need to change to institution_contact, but PI is currently more populated  -->
+                <td>{{ collab.pi}}</td>
+                <td>{{ collab.category.value }}</td>
+                <td>{{ collab.description}}</td>
+                <td class="table-date-td">{{ collab.irb_app_date }}</td>
+                <td class="table-date-td">{{ collab.irb_exp_date }}</td>
+                <td>
+                  <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                </td>
+                {% if collab.archive == False%}
+                  <td><a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open-o" aria-hidden="true"></i></a></td>
+                {% else %}
+                  <td>
+                    <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open" aria-hidden="true"></i></a>
+                  </td>
+                {% endif %}
+                  <td>
+                    <a href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
+                  </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- <div class="col-md-4">
+        <h2>User Collaborations</h2>
+        <table>
           <tr>
-            <th>Date Created</th>
-            <th>Date Modified</th>
+            <th>Institution Contact</th>
             <th>Status</th>
             <th>Principal Investigator</th>
-            <th>Institution</th>
-            {% if list == "all" %}
-              <th>Archived?</th>
-            {% endif %}
-            <th colspan="3" style="text-align: center">Actions</th>
+            <th colspan="2">Options</th>
           </tr>
-        </thead>
-        <tbody>
-          {% for collab in collabs %}
-            <tr>
-              <td class="table-date-td">{{ collab.utc_2_local(collab.id.generation_time) }}</td>
-              <td class="table-date-td">{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
-              <td>{{ collab.status.value }}</td>
-              <td>{{ collab.pi }}</td>
-              <td>{{ collab.institution }}</td>
-              {% if list == "all" %}
-                <td>{{ collab.archive}}</td>
-              {% endif %}
-              <td><a href="/new/init/{{ collab.id }}">Edit</a></td>
-              {% if collab.archive == False%}
-                <td><a href="/archive/{{ collab.id }}">Archive</a></td>
-              {% else %}
-                <td><a href="/archive/{{ collab.id }}">Restore</a></td>
-              {% endif %}
-                <td><a href="#">Favorite</a></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <!-- <div class="col-md-4">
-      <h2>User Collaborations</h2>
-      <table>
-        <tr>
-          <th>Institution Contact</th>
-          <th>Status</th>
-          <th>Principal Investigator</th>
-          <th colspan="2">Options</th>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </div> -->
-    <!-- <div class="col-md-5">
-       <h2>Archived Collaborations</h2>
-       <table class="table table-striped table-bordered table-sm">
-         <tr>
-           <th>Date Archived</th>
-           <th>Status</th>
-           <th>NeuroPace Contact</th>
-           <th>Institution</th>
-           {% if list == "all" %}
-             <th>Archived?</th>
-           {% endif %}
-           <th colspan="2">Options</th>
-         </tr>
-         {% for collab in collabs_arch %}
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </div> -->
+      <!-- <div class="col-md-5">
+         <h2>Archived Collaborations</h2>
+         <table class="table table-striped table-bordered table-sm">
            <tr>
-              {% if collab.archive == True %}
-                <td>{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
-                <td>{{ collab.status.value }}</td>
-                <td>{{ collab.neuropace_contact.value }}</td>
-                <td>{{ collab.institution }}</td>
-                {% if list == "all" %}
-                 <td>{{ collab.archive}}</td>
-                {% endif %}
-                <td><a href="/archive/{{ collab.id }}">Restore</a></td>
-            {% endif %}
+             <th>Date Archived</th>
+             <th>Status</th>
+             <th>NeuroPace Contact</th>
+             <th>Institution</th>
+             {% if list == "all" %}
+               <th>Archived?</th>
+             {% endif %}
+             <th colspan="2">Options</th>
            </tr>
-         {% endfor %}
-       </table>
-    </div> -->
+           {% for collab in collabs_arch %}
+             <tr>
+                {% if collab.archive == True %}
+                  <td>{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+                  <td>{{ collab.status.value }}</td>
+                  <td>{{ collab.neuropace_contact.value }}</td>
+                  <td>{{ collab.institution }}</td>
+                  {% if list == "all" %}
+                   <td>{{ collab.archive}}</td>
+                  {% endif %}
+                  <td><a href="/archive/{{ collab.id }}">Restore</a></td>
+              {% endif %}
+             </tr>
+           {% endfor %}
+         </table>
+      </div> -->
+    </div>
   </div>
+
 
 {% endblock %}
