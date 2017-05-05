@@ -273,19 +273,19 @@ def new_stage(stage, collab_id):
                 # Catch special cases where collab_previous = None -> "", SelectionField, "String"
                 # if collab_previous[k] is not None:
                 # Compares SelectionField values between previous&selection
-                print(k)
-                print(type(collab_previous[k]))
-                print(collab_previous[k])
-                print(collab_select[k])
+                # print(k)
+                # print(type(collab_previous[k]))
+                # print(collab_previous[k])
+                # print(collab_select[k])
 
                 if collab_previous[k] is None and type(collab_select[k]) ==  SelectionField:
-                    print("none to SelectionField object")
+                    # print("none to SelectionField object")
                     change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k].value))
                     change_list.append(change)
 
                 elif type(collab_previous[k]) == SelectionField :
                     if collab_previous[k].value != collab_select[k].value:
-                        print("inside sleection field and different")
+                        # print("inside sleection field and different")
                         change = Change(stage = stage, field = k, previous = str(collab_previous[k].value), current = str(collab_select[k].value))
                         change_list.append(change)
                 # Compares non-SelectionField values between previous&selection, if they are not date_mod
@@ -300,7 +300,7 @@ def new_stage(stage, collab_id):
         # If there are changes, create an audit object and save both
         if len(change_list) > 0:
             audit = Audit(date_change = datetime.today(), collab_ref = str(collab_select.id), username = current_user.username, change_list = change_list)
-            print("about to save audit wooh")
+            # print("about to save audit wooh")
             audit.save()
             # raise "wtf selection field object??"
 

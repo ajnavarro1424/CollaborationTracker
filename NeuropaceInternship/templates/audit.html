@@ -9,24 +9,25 @@
               <th>User</th>
               <th>Date Changed</th>
               <th>Collaboration ID</th>
-              <th>Changes</th>
+              <th>Stage</th>
+              <th>Field</th>
+              <th>Previous</th>
+              <th>Current</th>
             </tr>
           </thead>
           <tbody>
             {% for audit in audits %}
+            {% for change in audit.change_list %}
             <tr>
               <td>{{ audit.username }}</td>
               <td>{{ audit.date_change.strftime('%Y-%m-%d %I:%M:%S') }}</td>
               <td>{{ audit.collab_ref }}</td>
-              <td>
-                {% for change in audit.change_list %}
-                <fieldset>
-                  Field: {{change.field }} <br> Previous: {{ change.previous }} <br> Current: {{ change.current}}
-                </fieldset>
-                <br>
-                {% endfor %}
-              </td>
+              <td>{{ change.stage }}</td>
+              <td>{{ change.field }}</td>
+              <td>{{ change.previous }}</td>
+              <td>{{ change.current}}</td>
             </tr>
+            {% endfor %}
             {% endfor %}
           </tbody>
         </table>
