@@ -20,4 +20,19 @@ $(document).ready(function(){
 				filter_cssFilter: "form-control",
 			}
 		});
+		$("#audit_table").tablesorter({
+			theme : "bootstrap",
+			widthFixed: true,
+			headerTemplate : '{content} {icon}',
+			widgets : [ "uitheme", "filter", "zebra" ],
+			widgetOptions : {
+				zebra : ["even", "odd"],
+				// class names added to columns when sorted
+				columns: [ "primary", "secondary", "tertiary" ],
+				// reset filters button
+				filter_reset : ".reset",
+				// extra css class name (string or array) added to the filter element (input or select)
+				filter_cssFilter: "form-control",
+			}
+		});
 });
