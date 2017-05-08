@@ -34,5 +34,13 @@ $(document).ready(function(){
 				// extra css class name (string or array) added to the filter element (input or select)
 				filter_cssFilter: "form-control",
 			}
+
+
 		});
+		$('.reset').click(function(){
+			$('#audit_table').trigger('sortReset');
+			$('#audit_table').trigger('filterReset');
+			return false;
+		});
+
 });
