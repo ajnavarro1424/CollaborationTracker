@@ -38,8 +38,8 @@ $(document).ready(function(){
 
 		});
 		$('.reset').click(function(){
-			$('#audit_table').trigger('sortReset');
-			$('#audit_table').trigger('filterReset');
+			$('table').trigger('sortReset');
+			$('table').trigger('filterReset');
 			return false;
 		});
 
