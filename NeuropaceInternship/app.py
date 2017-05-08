@@ -45,6 +45,7 @@ class SelectionField(mdb.Document):
 class Collaboration(mdb.Document):
     archive = mdb.BooleanField(default = False)
     date_mod = mdb.DateTimeField()
+    favorite_list = mdb.ListField(mdb.ReferenceField(User))
     #Collaboration class will contain all the fields for all WF
     # Initiate Form values
     new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
@@ -202,23 +203,46 @@ def logout():
     return redirect("/")
 
 
-# Controller and routes
-# Main function will return a different list of collabs based on path variables
+#### MAIN
 @app.route("/")
 def main():
     collabs = Collaboration.objects(archive = False)
-    collabs_archived = Collaboration.objects(archive = True)
     return render_template('index.html', collabs=collabs)
-
+####
 @app.route("/filter/<list>")
 def list(list):
     #Returns a specific list of collabs based on passed URL variable
     if list == "all":
         collabs = Collaboration.objects()
+    elif list == "favorites":
+        collabs = Collaboration.objects(favorite_list = current_user.id)
     elif list == "archived":
         collabs = Collaboration.objects(archive = True)
+
     return render_template('index.html', collabs=collabs)
 
+# Favorite function, takes in collab_id and adds it to list of favorited collabs
+@app.route("/favorite/<collab_id>", methods=["GET"])
+@login_required
+def favorite(collab_id):
+    #Grab collab object from db with collab_id
+    collab_select = Collaboration.objects(id = collab_id).first()
+    if len(collab_select.favorite_list) == 0:
+        #Add favorited collab to user list of favorites
+        collab_select.favorite_list.append(current_user.id)
+        flash("Collaboration %s ADDED to favorites." % collab_select.id)
+    else:
+        for user in collab_select.favorite_list:
+            if current_user.username == user.username:
+                # Removes user object id from collab's favorite list.
+                collab_select.favorite_list.remove(user)
+                flash("Collaboration %s REMOVED from favorites" %collab_select.id)
+            else:
+                #Add favorited collab to user list of favorites
+                collab_select.favorite_list.append(current_user.id)
+                flash("Collaboration %s ADDED to favorites." % collab_select.id)
+    collab_select.save()
+    return redirect("/")
 
 # Should be a POST, but as a link a GET is more convienent.
 @app.route("/archive/<collab_id>", methods=["GET"])
@@ -236,7 +260,9 @@ def archive(collab_id):
     collab_select.save()
     # redirect to the index page where the archived collab will have disappeared
     return redirect('/')
-# Abstracted new collaboration workflow that takes in a stage and collab_id
+
+
+# Abstracted new/edit collaboration workflow that takes in a stage and collab_id
 # and generates the appropriate view and form.
 @app.route("/new/<stage>/<collab_id>", methods=["GET","POST"])
 @login_required

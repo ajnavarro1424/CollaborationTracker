@@ -25,8 +25,8 @@
       <div class="col-sm-6">
         <a class="btn btn-primary btn-inverse btn-sm" href="/filter/all">Show Acitve & Archive <i class="fa fa-th-list" aria-hidden="true"></i></a>
         <a class="btn btn-primary btn-sm" href="/filter/archived">Show Archive <i class="fa fa-folder" aria-hidden="true"></i></a>
-        <a class="btn btn-primary btn-sm" type="button">Show Favorites <i class="fa fa-star" aria-hidden="true"></i></a>
-        <button class="reset btn btn-primary btn-sm" type="button">Reset Filter/Sort <i class="fa fa-filter" aria-hidden="true"></i></button>
+        <a class="btn btn-primary btn-sm" href="/filter/favorites">Show Favorites <i class="fa fa-star" aria-hidden="true"></i></a>
+        <button class="reset btn btn-primary btn-sm" type="button">Reset Filter / Sort <i class="fa fa-filter" aria-hidden="true"></i></button>
       </div>
       <div class="col-sm-6">
       </div>
@@ -78,9 +78,14 @@
                     <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
+                {% if current_user in collab.favorite_list%}
+                  <td>  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star" aria-hidden="true"></i></a></td>
+                {% else %}
                   <td>
-                    <a href="#"><i class="fa fa-star-o" aria-hidden="true"></i></a>
+                    <a href="/favorite/{{ collab.id }}"><i class="fa fa-star-o" aria-hidden="true"></i></a>
                   </td>
+                {% endif %}
+
               </tr>
             {% endfor %}
           </tbody>
