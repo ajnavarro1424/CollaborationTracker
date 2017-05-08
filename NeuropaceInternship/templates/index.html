@@ -1,5 +1,6 @@
 {% extends 'base_test.html' %}
 {% block content %}
+  <!--Flash Message  -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul class=flashes>
@@ -9,7 +10,6 @@
     </ul>
     {% endif %}
   {% endwith %}
-
   {% if error %}
    <p class=error><strong>Error:</strong> {{ error }}</p>
   {% endif %}
@@ -23,8 +23,8 @@
     </div>
     <div class="row">
       <div class="col-sm-6">
-        <a class="btn btn-primary btn-inverse btn-sm" href="/filter/all">Show Acitve & Archived <i class="fa fa-th-list" aria-hidden="true"></i></a>
-        <a class="btn btn-primary btn-sm" href="/filter/archived">Show Archived <i class="fa fa-folder" aria-hidden="true"></i></a>
+        <a class="btn btn-primary btn-inverse btn-sm" href="/filter/all">Show Acitve & Archive <i class="fa fa-th-list" aria-hidden="true"></i></a>
+        <a class="btn btn-primary btn-sm" href="/filter/archived">Show Archive <i class="fa fa-folder" aria-hidden="true"></i></a>
         <a class="btn btn-primary btn-sm" type="button">Show Favorites <i class="fa fa-star" aria-hidden="true"></i></a>
         <button class="reset btn btn-primary btn-sm" type="button">Reset Filter/Sort <i class="fa fa-filter" aria-hidden="true"></i></button>
       </div>

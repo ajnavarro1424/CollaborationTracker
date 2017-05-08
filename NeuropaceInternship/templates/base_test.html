@@ -2,15 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+
       <!-- jQuery & TableSorter Plugin -->
-      <script
-        src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-        crossorigin="anonymous">
-      </script>
-      <script type="text/javascript" src=static/js/jquery.tablesorter.min.js></script>
-      <script src="static/js/jquery.tablesorter.widgets.js"></script>
-      <script src="static/js/index.js" charset="utf-8"></script>
+      <script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}" charset="utf-8"></script>
+      <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/jquery.tablesorter.widgets.js') }}"></script>
+      <!-- Tablesorter js file for index page  -->
+      <script src="{{ url_for('static', filename='js/index.js') }}" charset="utf-8"></script>
       <!--  -->
     <!--Bootsrap JavaScript CDN  -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -29,8 +27,8 @@
             crossorigin="anonymous">
     {% endblock extra_css2 %}
     {% block extra_css3 %}
-      <link rel="stylesheet" href="static/css/theme.bootstrap_3.css">
-      
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.bootstrap_3.css') }}">
+
     {% endblock extra_css3 %}
     {% assets "css/base.css" %}
       <link rel="stylesheet" href="{{ ASSET_URL }}"/>

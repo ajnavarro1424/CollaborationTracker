@@ -208,7 +208,7 @@ def logout():
 def main():
     collabs = Collaboration.objects(archive = False)
     collabs_archived = Collaboration.objects(archive = True)
-    return render_template('index.html', collabs=collabs, collabs_arch=collabs_archived)
+    return render_template('index.html', collabs=collabs)
 
 @app.route("/filter/<list>")
 def list(list):
