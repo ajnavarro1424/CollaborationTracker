@@ -208,18 +208,17 @@ def logout():
 def main():
     collabs = Collaboration.objects(archive = False)
     collabs_archived = Collaboration.objects(archive = True)
-    return render_template('index.html', collabs=collabs, collabs_arch=collabs_archived)
+    return render_template('index.html', collabs=collabs)
 
-@app.route("/<list>")
+@app.route("/filter/<list>")
 def list(list):
     #Returns a specific list of collabs based on passed URL variable
     if list == "all":
         collabs = Collaboration.objects()
-        return render_template('index.html', collabs=collabs, list=list)
-    else:
-        collabs = Collaboration.objects(archive = False)
-        flash("The %s list does not exist" % list)
-        return render_template('index.html', collabs=collabs)
+    elif list == "archived":
+        collabs = Collaboration.objects(archive = True)
+    return render_template('index.html', collabs=collabs)
+
 
 # Should be a POST, but as a link a GET is more convienent.
 @app.route("/archive/<collab_id>", methods=["GET"])

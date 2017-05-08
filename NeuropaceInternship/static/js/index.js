@@ -20,6 +20,7 @@ $(document).ready(function(){
 				filter_cssFilter: "form-control",
 			}
 		});
+		// Tablesorter call and config for the audit table
 		$("#audit_table").tablesorter({
 			theme : "bootstrap",
 			widthFixed: true,
@@ -34,9 +35,8 @@ $(document).ready(function(){
 				// extra css class name (string or array) added to the filter element (input or select)
 				filter_cssFilter: "form-control",
 			}
-
-
 		});
+		// Reset table function defined for the reset sort/filter buttons
 		$('.reset').click(function(){
 			$('table').trigger('sortReset');
 			$('table').trigger('filterReset');
