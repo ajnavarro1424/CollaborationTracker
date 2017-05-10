@@ -15,7 +15,7 @@
 
 {% block column1 %}
   <div class="form-group">
-    {{with_errors(form.box_link)}}
+    {{(form.box_link)}}
   </div>
 {% endblock %}
 
@@ -26,8 +26,8 @@
 {% endblock %}
 
 {% block review %}
-  {{with_errors(form.notes)}}
-  {{with_errors(form.status)}}
+  {{(form.notes)}}
+  {{(form.status)}}
   {{ form.csrf_token }}
   <input type="submit" class="submit" value="Submit Closure">
 {% endblock %}

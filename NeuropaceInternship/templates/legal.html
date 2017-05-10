@@ -15,21 +15,21 @@
 
 {% block column1 %}
   <div class="form-group">
-    {{with_errors(form.approval_date)}}
-    {{with_errors(form.approval_by)}}
+    {{(form.approval_date)}}
+    {{(form.approval_by)}}
   </div>
 {% endblock %}
 
 {% block column2 %}
   <div class="form-group">
-    {{with_errors(form.irb_app_date)}}
-    {{with_errors(form.irb_exp_date)}}
+    {{(form.irb_app_date)}}
+    {{(form.irb_exp_date)}}
   </div>
 {% endblock %}
 
 {% block review %}
-  {{with_errors(form.legal_notes)}}
-  {{with_errors(form.status)}}
+  {{(form.legal_notes)}}
+  {{(form.status)}}
   {{ form.csrf_token }}
   <input type="submit" class="submit" value="Submit Legal">
 {% endblock %}

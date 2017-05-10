@@ -15,39 +15,39 @@
 
   {% block column1 %}
     <div class="form-group">
-      {{ with_errors(form.neuropace_contact) }}
-      {{ with_errors(form.study_title) }}
-      {{ with_errors(form.description) }}
+      {{ (form.neuropace_contact) }}
+      {{ (form.study_title) }}
+      {{ (form.description) }}
     </div>
     <div class="form-group">
-      {{ with_errors(form.share_type) }}
-      {{ with_errors(form.sharing_method) }}
-      {{ with_errors(form.sharing_language) }}
+      {{ (form.share_type) }}
+      {{ (form.sharing_method) }}
+      {{ (form.sharing_language) }}
     </div>
     <div class="form-group">
-      {{ with_errors(form.study_type) }}
-      {{ with_errors(form.study_identifier) }}
+      {{ (form.study_type) }}
+      {{ (form.study_identifier) }}
     </div>
   {% endblock %}
 
   {% block column2 %}
     <div class="form-group">
-      {{ with_errors(form.dataset_description) }}
-      {{ with_errors(form.risk_level) }}
-      {{ with_errors(form.single_multi_center) }}
+      {{ (form.dataset_description) }}
+      {{ (form.risk_level) }}
+      {{ (form.single_multi_center) }}
     </div>
     <div class="form-group">
-      {{ with_errors(form.accessories_language) }}
+      {{ (form.accessories_language) }}
     </div>
     <div class="form-group">
-      {{ with_errors(form.accessories_needed) }}
-      {{ with_errors(form.phi_present) }}
+      {{ (form.accessories_needed) }}
+      {{ (form.phi_present) }}
     </div>
   {% endblock %}
 
   {% block review %}
-    {{ with_errors(form.detail_notes) }}
-    {{ with_errors(form.status) }}
+    {{ (form.detail_notes) }}
+    {{ (form.status) }}
     {{ form.csrf_token }}
     <input type="submit" class="submit" value="Submit Details">
   {% endblock %}
