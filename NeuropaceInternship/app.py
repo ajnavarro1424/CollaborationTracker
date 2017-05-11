@@ -211,6 +211,7 @@ def logout():
 @app.route("/")
 def main():
     collabs = Collaboration.objects(archive = False)
+
     return render_template('index.html', collabs=collabs)
 ####
 @app.route("/filter/<list>")
@@ -264,6 +265,18 @@ def archive(collab_id):
     collab_select.save()
     # redirect to the index page where the archived collab will have disappeared
     return redirect('/')
+
+
+@app.route("/search")
+@login_required
+def search():
+    collabs = Collaboration.objects()
+    return render_template("search.html", collabs=collabs, type=type)
+
+
+
+
+
 
 
 # Abstracted new/edit collaboration workflow that takes in a stage and collab_id
