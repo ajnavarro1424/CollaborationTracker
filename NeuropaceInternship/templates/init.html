@@ -15,26 +15,36 @@
 
   {% block column1 %}
   <div class="form-group">
-    {{ with_errors(form.entered_by) }}
-    {{ with_errors(form.entry_date) }}
-    {{ with_errors(form.date_needed) }}
+    {{ form.entered_by.label }}
+    {{ form.entered_by(class="form-control", type="text") }}
+    {{ form.entry_date.label }}
+    {{ form.entry_date(class="form-control", type="date") }}
+    {{ form.date_needed.label }}
+    {{ form.date_needed(class="form-control", type="date") }}
   </div>
   {% endblock %}
 
   {% block column2 %}
   <div class="form-group">
-    {{ with_errors(form.institution) }}
-    {{ with_errors(form.institution_contact) }}
-    {{ with_errors(form.pi) }}
-    {{ with_errors(form.category) }}
-    {{ with_errors(form.reason) }}
+    {{ form.institution.label }}
+    {{ (form.institution(class="form-control", type="text")) }}
+    {{ form.institution_contact.label }}
+    {{ (form.institution_contact(class="form-control", type="text")) }}
+    {{ form.pi.label }}
+    {{ (form.pi(class="form-control", type="text")) }}
+    {{ form.category.label }}
+    {{ (form.category(class="form-control")) }}
+    {{ form.reason.label }}
+    {{ (form.reason(class="form-control")) }}
   </div>
   {% endblock %}
 
   {% block review %}
   <div class="form-group">
-    {{ with_errors(form.init_notes) }}
-    {{ with_errors(form.status) }}
+    {{ form.init_notes.label }}
+    {{ form.init_notes(class="form-control", type="text") }}
+    {{ form.status.label }}
+    {{ form.status(class="form-control") }}
     {{ form.csrf_token }}
   </div>
     <input class="submit" type="submit" value="Submit Initiation">
