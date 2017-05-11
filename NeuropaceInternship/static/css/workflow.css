@@ -8,7 +8,7 @@
 
 textarea {
   min-width: 95%;
-  height: 23px;
+  height: 115px !important;
 }
 
 select {

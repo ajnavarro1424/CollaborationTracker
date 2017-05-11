@@ -1,6 +1,16 @@
 .table-date-td {
-	width: 7%;
+	width: 9%;
 }
 .table-irb-td {
 	width: 12%;
+}
+
+table {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.container-fluid {
+	padding-right: 30px;
+	padding-left: 30px;
 }

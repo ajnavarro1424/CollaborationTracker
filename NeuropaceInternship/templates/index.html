@@ -14,7 +14,7 @@
    <p class=error><strong>Error:</strong> {{ error }}</p>
   {% endif %}
 
-  <div class="container-fluid">
+  <div id="index-container"class="container-fluid">
     <div class="row">
       <div class="col-md-12">
         <h1>NeuroPace Collaboration Tracker</h1>
@@ -23,10 +23,10 @@
     </div>
     <div class="row">
       <div class="col-sm-6">
-        <a class="btn btn-primary btn-inverse btn-sm" href="/filter/all">Show Active & Archive <i class="fa fa-th-list" aria-hidden="true"></i></a>
-        <a class="btn btn-primary btn-sm" href="/filter/archived">Show Archive <i class="fa fa-folder" aria-hidden="true"></i></a>
-        <a class="btn btn-primary btn-sm" href="/filter/favorites">Show Favorites <i class="fa fa-star" aria-hidden="true"></i></a>
-        <button class="reset btn btn-primary btn-sm" type="button">Reset Filter / Sort <i class="fa fa-filter" aria-hidden="true"></i></button>
+        <a class="btn btn-primary btn-inverse btn-sm" href="/filter/all">Show Active & Archive <i class="fa fa-th-list fa-lg" aria-hidden="true"></i></a>
+        <a class="btn btn-primary btn-sm" href="/filter/archived">Show Archive <i class="fa fa-folder fa-lg" aria-hidden="true"></i></a>
+        <a class="btn btn-primary btn-sm" href="/filter/favorites">Show Favorites <i class="fa fa-star fa-lg" aria-hidden="true"></i></a>
+        <button class="reset btn btn-primary btn-sm" type="button">Reset Filter / Sort <i class="fa fa-filter fa-lg" aria-hidden="true"></i></button>
       </div>
       <div class="col-sm-6">
       </div>
@@ -39,6 +39,7 @@
             <tr>
               <th>Date Created</th>
               <th>Date Modified</th>
+              <th>Collaboration ID</th>
               <th class="filter-select filter-exact" data-placeholder="Status">Status</th>
               <th>Study Identifier</th>
               <th class="filter-select filter-exact" data-placeholder="Contact">NeuroPace Contact</th>
@@ -48,9 +49,9 @@
               <th>IRB App. Date</th>
               <th>IRB Exp. Date</th>
               <th colspan="3" class="sorter-false">
-                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit<br />
-                <i class="fa fa-folder-open-o" aria-hidden="true"></i>Archive<br />
-                <i class="fa fa-star-o" aria-hidden="true"></i>Favorite
+                <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Edit<br />
+                <i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i> Archive<br />
+                <i class="fa fa-star-o fa-lg" aria-hidden="true"></i> Favorite
               </th>
             </tr>
           </thead>
@@ -59,30 +60,31 @@
               <tr>
                 <td class="table-date-td">{{ collab.utc_2_local(collab.id.generation_time) }}</td>
                 <td class="table-date-td">{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
-                <td>{{ collab.status.value }}</td>
-                <td>{{ collab.study_identifier}}</td>
-                <td>{{ collab.neuropace_contact.value}}</td>
+                <td class="table-date-td">{{ collab.id }}</td>
+                <td class="table-date-td">{{ collab.status.value }}</td>
+                <td class="table-date-td">{{ collab.study_identifier}}</td>
+                <td class="table-date-td">{{ collab.neuropace_contact.value}}</td>
                 <!--This may need to change to institution_contact, but PI is currently more populated  -->
-                <td>{{ collab.pi}}</td>
-                <td>{{ collab.category.value }}</td>
+                <td class="table-date-td">{{ collab.pi}}</td>
+                <td class="table-date-td">{{ collab.category.value }}</td>
                 <td>{{ collab.description}}</td>
-                <td class="table-irb-td">{{ collab.irb_app_date }}</td>
-                <td class="table-irb-td">{{ collab.irb_exp_date }}</td>
+                <td class="table-date-td">{{ collab.irb_app_date }}</td>
+                <td class="table-date-td">{{ collab.irb_exp_date }}</td>
                 <td>
-                  <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                  <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a>
                 </td>
                 {% if collab.archive == False%}
-                  <td><a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open-o" aria-hidden="true"></i></a></td>
+                  <td><a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i></a></td>
                 {% else %}
                   <td>
-                    <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open" aria-hidden="true"></i></a>
+                    <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open fa-lg" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
                 {% if current_user in collab.favorite_list%}
-                  <td>  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star" aria-hidden="true"></i></a></td>
+                  <td>  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star fa-lg" aria-hidden="true"></i></a></td>
                 {% else %}
                   <td>
-                    <a href="/favorite/{{ collab.id }}"><i class="fa fa-star-o" aria-hidden="true"></i></a>
+                    <a href="/favorite/{{ collab.id }}"><i class="fa fa-star-o fa-lg" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
 
