@@ -59,7 +59,7 @@ class Collaboration(mdb.Document):
     pi = mdb.StringField(label = "Primary Investigator", max_length = 1000)
     reason = mdb.ReferenceField(SelectionField, label = "Reason for Collaboration")#dropdown-menu
     category = mdb.ReferenceField(SelectionField) #dropdown-menu
-    init_notes = mdb.StringField(label = "Initiation Notes", max_length = 1000)
+    init_notes = mdb.StringField(label = "Initiation Notes")
     # Details workflow (Flow2/Pg1 is Green-light or Red-light)
     neuropace_contact = mdb.ReferenceField(SelectionField, label = "NeuroPace Contact") #dropdown-menu
     sharing_method = mdb.ReferenceField(SelectionField, label = "Data Sharing Method") #dropdown-menu
@@ -75,7 +75,7 @@ class Collaboration(mdb.Document):
     accessories_needed = mdb.BooleanField(label = "Research Accessories Needed?")
     accessories_language = mdb.ReferenceField(SelectionField, label = "Research Accessories Language") #dropdown-menu
     single_multi_center = mdb.ReferenceField(SelectionField, label = "Single or Multi-Center") #dropdown-menu
-    detail_notes = mdb.StringField(max_length = 1000)
+    detail_notes = mdb.StringField()
     #Contracts and Financials (Flow2/Pg3)
     funding_source = mdb.ReferenceField(SelectionField) #dropdown-menu
     np_compensation = mdb.BooleanField(label = "Compensated by NP?")
@@ -86,7 +86,7 @@ class Collaboration(mdb.Document):
     vpn_access = mdb.StringField(label = "VPN access?", max_length = 1000)
     contract_status = mdb.ReferenceField(SelectionField, label = "Contract Status")
     contract_approval_date = mdb.StringField(max_length = 1000)
-    contract_notes = mdb.StringField(max_length = 1000)
+    contract_notes = mdb.StringField()
     #Legal(Flow4/Pg.4)
     # Not Tracked values caused DateTimeField to fail.
     approval_date = mdb.StringField(label='NP Study Sharing Approval Date', max_length = 1000)
@@ -98,13 +98,13 @@ class Collaboration(mdb.Document):
     pc_data_sharing = mdb.BooleanField()
     icfc_data_sharing = mdb.BooleanField()
     expiration_date = mdb.StringField(max_length = 1000)
-    ds_racc_notes = mdb.StringField(max_length = 1000)
-    legal_notes = mdb.StringField(max_length = 1000)
+    ds_racc_notes = mdb.StringField()
+    legal_notes = mdb.StringField()
 
     #Closure
     status = mdb.ReferenceField(SelectionField, label = "Collaboration Status") # dropdown-menu
     box_link = mdb.StringField(label = 'BOX link', max_length = 1000)
-    notes = mdb.StringField(max_length = 1000)
+    notes = mdb.StringField()
 
     #Converts UTC time to local time
     def utc_2_local(self, field):

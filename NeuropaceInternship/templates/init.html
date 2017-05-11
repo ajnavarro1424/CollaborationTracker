@@ -20,7 +20,7 @@
     {{ form.entry_date.label }}
     {{ form.entry_date(class="form-control", type="date") }}
     {{ form.date_needed.label }}
-    {{ form.date_needed(class="form-control", type="text") }}
+    {{ form.date_needed(class="form-control", type="date") }}
   </div>
   {% endblock %}
 
@@ -28,8 +28,8 @@
   <div class="form-group">
     {{ form.institution.label }}
     {{ (form.institution(class="form-control", type="text")) }}
-    {{ form.date_needed.label }}
-    {{ (form.institution_contact(class="form-control", type="date")) }}
+    {{ form.institution_contact.label }}
+    {{ (form.institution_contact(class="form-control", type="text")) }}
     {{ form.pi.label }}
     {{ (form.pi(class="form-control", type="text")) }}
     {{ form.category.label }}

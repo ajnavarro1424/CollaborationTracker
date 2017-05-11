@@ -15,22 +15,32 @@
 
 {% block column1 %}
   <div class="form-group">
-    {{(form.funding_source)}}
-    {{(form.np_consultant)}}
-    {{(form.np_compensation)}}
+    {{ form.funding_source.label }}
+    {{ form.funding_source(class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ form.np_consultant.label }}
+    {{ form.np_consultant(class="form-check") }}
+    <br>
+    {{ form.np_compensation.label }}
+    {{ form.np_compensation(class="form-check") }}
   </div>
 {% endblock %}
 
 {% block column2 %}
   <div class="form-group">
-    {{(form.contract_needed)}}
-    {{(form.budget_needed)}}
+    {{ form.contract_needed.label }}
+    {{ form.contract_needed(class="form-control") }}
+    {{ form.budget_needed.label }}
+    {{ form.budget_needed(class="form-control", type="text") }}
   </div>
 {% endblock %}
 
 {% block review %}
-  {{(form.contract_notes)}}
-  {{(form.status)}}
+  {{ form.contract_notes.label }}
+  {{ form.contract_notes(class="form-control", type="text") }}
+  {{ form.status.label }}
+  {{ form.status(class="form-control") }}
   {{ form.csrf_token }}
   <input type="submit" class="submit" value="Submit Contract">
 {% endblock %}

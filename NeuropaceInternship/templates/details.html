@@ -15,39 +15,56 @@
 
   {% block column1 %}
     <div class="form-group">
-      {{ (form.neuropace_contact) }}
-      {{ (form.study_title) }}
-      {{ (form.description) }}
+      {{ form.neuropace_contact.label }}
+      {{ form.neuropace_contact(class="form-control") }}
+      {{ form.study_title.label }}
+      {{ (form.study_title(class="form-control", type="text")) }}
+      {{ form.description.label }}
+      {{ (form.description(class="form-control", type="text")) }}
+      {{ form.dataset_description.label }}
+      {{ form.dataset_description(class="form-control", type="text") }}
     </div>
     <div class="form-group">
-      {{ (form.share_type) }}
-      {{ (form.sharing_method) }}
-      {{ (form.sharing_language) }}
-    </div>
-    <div class="form-group">
-      {{ (form.study_type) }}
-      {{ (form.study_identifier) }}
+      {{ form.share_type.label }}
+      {{ form.share_type(class="form-control") }}
+      {{ form.sharing_method.label }}
+      {{ form.sharing_method(class="form-control", type="text") }}
+      {{ form.sharing_language.label }}
+      {{ (form.sharing_language(class="form-control")) }}
     </div>
   {% endblock %}
 
   {% block column2 %}
     <div class="form-group">
-      {{ (form.dataset_description) }}
-      {{ (form.risk_level) }}
-      {{ (form.single_multi_center) }}
+      {{ form.study_type.label }}
+      {{ form.study_type(class="form-control") }}
+      {{ form.study_identifier.label }}
+      {{ form.study_identifier(class="form-control", type="text") }}
     </div>
     <div class="form-group">
-      {{ (form.accessories_language) }}
+      {{ form.risk_level.label }}
+      {{ form.risk_level(class="form-control") }}
+      {{ form.single_multi_center.label }}
+      {{ form.single_multi_center(class="form-control") }}
     </div>
     <div class="form-group">
-      {{ (form.accessories_needed) }}
-      {{ (form.phi_present) }}
+      {{ form.accessories_language.label }}
+      {{ form.accessories_language(class="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ form.accessories_needed.label }}
+      {{ form.accessories_needed(class="form-check") }}
+      <br>
+      {{ form.phi_present.label }}
+      {{ form.phi_present(class="form-check") }}
     </div>
   {% endblock %}
 
   {% block review %}
-    {{ (form.detail_notes) }}
-    {{ (form.status) }}
+    {{ form.detail_notes.label }}
+    {{ form.detail_notes(class="form-control", type="text") }}
+    {{ form.status.label }}
+    {{ form.status(class="form-control") }}
     {{ form.csrf_token }}
     <input type="submit" class="submit" value="Submit Details">
   {% endblock %}

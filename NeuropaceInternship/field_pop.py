@@ -96,7 +96,7 @@ study_dict = [
 def import_data():
     top_rows = 14  # The first 12 rows have no data??
     end_row = 45
-    with open('DataSharingSpreadsheet.csv', 'rU') as csv_sheet:
+    with open('DataSharing_HTML5.csv', 'rU') as csv_sheet:
         for (row_num, row) in enumerate(csv.reader(csv_sheet, delimiter=',')):#moving down
             if row_num < top_rows:  # skip the column names
                 continue
