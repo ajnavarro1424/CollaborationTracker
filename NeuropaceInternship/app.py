@@ -51,7 +51,7 @@ class Collaboration(mdb.Document):
     #Collaboration class will contain all the fields for all WF
     # Initiate Form values
     new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
-    entry_date = mdb.StringField(label = "Entry date", max_length = 1000)
+    entry_date = mdb.StringField(label = "Entry date", max_length = 1000, stage = "init")
     entered_by = mdb.StringField(label = "Entered by", max_length = 1000)
     date_needed = mdb.StringField(max_length = 1000)
     institution = mdb.StringField(max_length = 1000)
@@ -138,10 +138,6 @@ def update_modified(sender, document):
 
 signals.pre_save.connect(update_modified)
 
-
-
-
-
 def labelize(field):
     if hasattr(field, "label"):
         return field.label
@@ -169,6 +165,28 @@ def generate_id():
     collab = Collaboration()
     return collab.save()
 
+@app.context_processor
+def utility_processor():
+    def is_selection(collab_value):
+        if type(collab_value) == SelectionField:
+            return True
+        else:
+            return False
+
+    def labelize(obj):
+        if hasattr(obj, "label"):
+            return obj.label
+        return obj.db_field.replace('_', ' ').title()
+
+    # def stage_finder(field):
+    #     for stage in stage_dict
+    #         if field in stage:
+    #             return stage
+    #         else:
+    #             return "init"
+
+    return dict(is_selection = is_selection, labelize=labelize)
+
 
 
 form_dict = {
@@ -178,6 +196,14 @@ form_dict = {
             'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes']),
             'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'notes'])
             }
+
+stage_dict = {
+    'init' : ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution',    'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes'],
+    'details' : ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes'],
+    'contract' : ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes'],
+    'legal' : ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes'],
+    'closure' : ['status', 'box_link', 'notes']
+    }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
 
@@ -271,19 +297,7 @@ def archive(collab_id):
     return redirect('/')
 
 
-@app.context_processor
-def utility_processor():
-    def is_selection(collab_value):
-        if type(collab_value) == SelectionField:
-            return True
-        else:
-            return False
 
-    def labelize(obj):
-        if hasattr(obj, "label"):
-            return obj.label
-        return obj.db_field.replace('_', ' ').title()
-    return dict(is_selection = is_selection, labelize=labelize)
 
 @app.route("/search")
 @login_required

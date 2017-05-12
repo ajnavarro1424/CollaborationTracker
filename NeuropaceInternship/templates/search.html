@@ -20,7 +20,7 @@
           {% for collab in collabs %}
             {% for field in collab._fields %}
               <tr>
-                <td>{{ collab.id }}</td>
+                <td><a href="/new/init/{{ collab.id }}">{{ collab.id }}</a></td>
                 <td>{{ labelize(collab._fields[field]) }}</td>
                 {% if is_selection(collab[field]) %}
                   <td>{{ collab[field].value }}</td>
