@@ -94,16 +94,16 @@ class Collaboration(mdb.Document):
     irb_app_date = mdb.StringField(label = 'Initial IRB App Date', max_length = 1000)
     irb_exp_date = mdb.StringField(label = 'Latest IRB Exp Date', max_length = 1000)
     # Legal continued(.pdf values)
-    pc_research_acc = mdb.BooleanField()
-    pc_data_sharing = mdb.BooleanField()
-    icfc_data_sharing = mdb.BooleanField()
+    pc_research_acc = mdb.BooleanField(label = "Protocol Coverage for Research Accessories")
+    pc_data_sharing = mdb.BooleanField(label = "Protocol Coverage for Data Sharing")
+    icfc_data_sharing = mdb.BooleanField(label = "ICF Coverage for Data Sharing")
     expiration_date = mdb.StringField(max_length = 1000)
-    ds_racc_notes = mdb.StringField()
+    ds_racc_notes = mdb.StringField(label = "Data Sharing / Research Accessories Notes")
     legal_notes = mdb.StringField()
 
     #Closure
     status = mdb.ReferenceField(SelectionField, label = "Collaboration Status") # dropdown-menu
-    box_link = mdb.StringField(label = 'BOX link', max_length = 1000)
+    box_link = mdb.StringField(label = 'BOX Link', max_length = 1000)
     notes = mdb.StringField()
 
     #Converts UTC time to local time
@@ -137,6 +137,10 @@ def update_modified(sender, document):
         document.date_mod = datetime.today()
 
 signals.pre_save.connect(update_modified)
+
+
+
+
 
 def labelize(field):
     if hasattr(field, "label"):
@@ -267,11 +271,41 @@ def archive(collab_id):
     return redirect('/')
 
 
+@app.context_processor
+def utility_processor():
+    def is_selection(collab_value):
+        if type(collab_value) == SelectionField:
+            return True
+        else:
+            return False
+
+    def labelize(obj):
+        if hasattr(obj, "label"):
+            return obj.label
+        return obj.db_field.replace('_', ' ').title()
+    return dict(is_selection = is_selection, labelize=labelize)
+
 @app.route("/search")
 @login_required
 def search():
+
+    collab_objs = Collaboration._fields
+    # Grab all the collabs from the database to loop through
     collabs = Collaboration.objects()
-    return render_template("search.html", collabs=collabs, type=type)
+    # Build a dictionary with the fields and values
+    collab_array = []
+    # for collab in collabs:
+    #     collab_dict = {}
+    #     for field in collab._fields_ordered:
+    #         label = labelize(collab_objs[field])
+    #
+    #         if type(collab[field]) == SelectionField:
+    #             # Adds the key/value pair to the dictionary
+    #             collab_dict[label] = collab[field].value
+    #         else:
+    #             collab_dict[label] = collab[field]
+    #     collab_array.append(collab_dict)
+    return render_template("search.html", collabs=collabs)
 
 
 

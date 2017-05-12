@@ -17,11 +17,11 @@ $(document).ready(function(){
 				// reset filters button
 				filter_reset : ".reset",
 				// extra css class name (string or array) added to the filter element (input or select)
-				filter_cssFilter: "form-control",
+				filter_cssFilter: "form-control"
 			}
 		});
 		// Tablesorter call and config for the audit table
-		$("#audit_table").tablesorter({
+		$("#audit_table, #search_table").tablesorter({
 			theme : "bootstrap",
 			widthFixed: true,
 			headerTemplate : '{content} {icon}',
@@ -33,7 +33,7 @@ $(document).ready(function(){
 				// reset filters button
 				filter_reset : ".reset",
 				// extra css class name (string or array) added to the filter element (input or select)
-				filter_cssFilter: "form-control",
+				filter_cssFilter: "form-control"
 			}
 		});
 		// Reset table function defined for the reset sort/filter buttons
