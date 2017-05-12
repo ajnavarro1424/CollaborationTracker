@@ -51,7 +51,7 @@ class Collaboration(mdb.Document):
     #Collaboration class will contain all the fields for all WF
     # Initiate Form values
     new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
-    entry_date = mdb.StringField(label = "Entry date", max_length = 1000, stage = "init")
+    entry_date = mdb.StringField(label = "Entry date", max_length = 1000)
     entered_by = mdb.StringField(label = "Entered by", max_length = 1000)
     date_needed = mdb.StringField(max_length = 1000)
     institution = mdb.StringField(max_length = 1000)
