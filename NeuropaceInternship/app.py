@@ -94,16 +94,16 @@ class Collaboration(mdb.Document):
     irb_app_date = mdb.StringField(label = 'Initial IRB App Date', max_length = 1000)
     irb_exp_date = mdb.StringField(label = 'Latest IRB Exp Date', max_length = 1000)
     # Legal continued(.pdf values)
-    pc_research_acc = mdb.BooleanField()
-    pc_data_sharing = mdb.BooleanField()
-    icfc_data_sharing = mdb.BooleanField()
+    pc_research_acc = mdb.BooleanField(label = "Protocol Coverage for Research Accessories")
+    pc_data_sharing = mdb.BooleanField(label = "Protocol Coverage for Data Sharing")
+    icfc_data_sharing = mdb.BooleanField(label = "ICF Coverage for Data Sharing")
     expiration_date = mdb.StringField(max_length = 1000)
-    ds_racc_notes = mdb.StringField()
+    ds_racc_notes = mdb.StringField(label = "Data Sharing / Research Accessories Notes")
     legal_notes = mdb.StringField()
 
     #Closure
     status = mdb.ReferenceField(SelectionField, label = "Collaboration Status") # dropdown-menu
-    box_link = mdb.StringField(label = 'BOX link', max_length = 1000)
+    box_link = mdb.StringField(label = 'BOX Link', max_length = 1000)
     notes = mdb.StringField()
 
     #Converts UTC time to local time
@@ -165,6 +165,28 @@ def generate_id():
     collab = Collaboration()
     return collab.save()
 
+@app.context_processor
+def utility_processor():
+    def is_selection(collab_value):
+        if type(collab_value) == SelectionField:
+            return True
+        else:
+            return False
+
+    def labelize(obj):
+        if hasattr(obj, "label"):
+            return obj.label
+        return obj.db_field.replace('_', ' ').title()
+
+    # def stage_finder(field):
+    #     for stage in stage_dict
+    #         if field in stage:
+    #             return stage
+    #         else:
+    #             return "init"
+
+    return dict(is_selection = is_selection, labelize=labelize)
+
 
 
 form_dict = {
@@ -174,6 +196,14 @@ form_dict = {
             'legal' : collab_model_form(Collaboration, ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes']),
             'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'notes'])
             }
+
+stage_dict = {
+    'init' : ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution',    'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes'],
+    'details' : ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes'],
+    'contract' : ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes'],
+    'legal' : ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes'],
+    'closure' : ['status', 'box_link', 'notes']
+    }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
 
@@ -211,6 +241,7 @@ def logout():
 @app.route("/")
 def main():
     collabs = Collaboration.objects(archive = False)
+
     return render_template('index.html', collabs=collabs)
 ####
 @app.route("/filter/<list>")
@@ -264,6 +295,36 @@ def archive(collab_id):
     collab_select.save()
     # redirect to the index page where the archived collab will have disappeared
     return redirect('/')
+
+
+
+
+@app.route("/search")
+@login_required
+def search():
+
+    collab_objs = Collaboration._fields
+    # Grab all the collabs from the database to loop through
+    collabs = Collaboration.objects()
+    # Build a dictionary with the fields and values
+    collab_array = []
+    # for collab in collabs:
+    #     collab_dict = {}
+    #     for field in collab._fields_ordered:
+    #         label = labelize(collab_objs[field])
+    #
+    #         if type(collab[field]) == SelectionField:
+    #             # Adds the key/value pair to the dictionary
+    #             collab_dict[label] = collab[field].value
+    #         else:
+    #             collab_dict[label] = collab[field]
+    #     collab_array.append(collab_dict)
+    return render_template("search.html", collabs=collabs)
+
+
+
+
+
 
 
 # Abstracted new/edit collaboration workflow that takes in a stage and collab_id

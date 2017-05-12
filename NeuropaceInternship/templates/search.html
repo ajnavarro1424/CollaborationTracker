@@ -1,0 +1,38 @@
+{% extends 'base_test.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>Search All Collaborations</h2>
+      <button class="reset btn btn-primary btn-sm" type="button">Reset Filter / Sort <i class="fa fa-filter" aria-hidden="true"></i></button>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <table id="search_table" class="table table-striped table-bordered tablesorter">
+        <thead>
+            <th>Collaboration ID</th>
+            <th>Field</th>
+            <th>Value</th>
+        </thead>
+        <tbody>
+          {% for collab in collabs %}
+            {% for field in collab._fields %}
+              <tr>
+                <td><a href="/new/init/{{ collab.id }}">{{ collab.id }}</a></td>
+                <td>{{ labelize(collab._fields[field]) }}</td>
+                {% if is_selection(collab[field]) %}
+                  <td>{{ collab[field].value }}</td>
+                {% else %}
+                  <td>{{ collab[field] }}</td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
