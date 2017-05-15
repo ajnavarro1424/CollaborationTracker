@@ -20,12 +20,12 @@
           {% for collab in collabs %}
             {% for field in collab._fields %}
               <tr>
-                <td><a href="/new/init/{{ collab.id }}">{{ collab.id }}</a></td>
-                <td>{{ labelize(collab._fields[field]) }}</td>
+                <td class="search-cell"><a href="/new/init/{{ collab.id }}">{{ collab.id }}</a></td>
+                <td class="search-cell">{{ labelize(collab._fields[field]) }}</td>
                 {% if is_selection(collab[field]) %}
-                  <td>{{ collab[field].value }}</td>
+                  <td class="search-cell">{{ collab[field].value }}</td>
                 {% else %}
-                  <td>{{ collab[field] }}</td>
+                  <td class="search-cell">{{ collab[field] }}</td>
                 {% endif %}
               </tr>
             {% endfor %}

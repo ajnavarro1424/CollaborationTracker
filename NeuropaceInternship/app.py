@@ -46,7 +46,7 @@ class SelectionField(mdb.Document):
 # Model used to build our collection by passing our documents (document object)
 class Collaboration(mdb.Document):
     archive = mdb.BooleanField(default = False)
-    date_mod = mdb.DateTimeField()
+    date_mod = mdb.DateTimeField(label = "Date Modified")
     favorite_list = mdb.ListField(mdb.ReferenceField(User))
     #Collaboration class will contain all the fields for all WF
     # Initiate Form values
@@ -158,7 +158,7 @@ def collab_model_form(model, only, field_args={}, **kwargs):
                                  'queryset': SelectionField.objects(field_name=field_name),
                                  'label' : labelize(field),
                                  'allow_blank':True,
-                                 'blank_text':u'--please please choose--'}
+                                 'blank_text':u'--Enter Selection--'}
     return model_form(model, only=only, field_args=field_args, **kwargs)
 
 def generate_id():
@@ -198,11 +198,11 @@ form_dict = {
             }
 
 stage_dict = {
-    'init' : ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution',    'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes'],
-    'details' : ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes'],
-    'contract' : ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes'],
-    'legal' : ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes'],
-    'closure' : ['status', 'box_link', 'notes']
+    'Initiation' : ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes'],
+    'Details' : ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes'],
+    'Contract' : ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes'],
+    'Legal' : ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes'],
+    'Closure' : ['status', 'box_link', 'notes']
     }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
@@ -296,8 +296,13 @@ def archive(collab_id):
     # redirect to the index page where the archived collab will have disappeared
     return redirect('/')
 
-
-
+@app.route("/report/<collab_id>", methods=["GET"])
+@login_required
+def report(collab_id):
+    #Go grab selected collaboration from DB
+    collab_select = Collaboration.objects(id=collab_id).first()
+    report_date = datetime.today().strftime('%Y-%m-%d %I:%M:%S')
+    return render_template("report.html", collab_select=collab_select,report_date=report_date, stage_dict=stage_dict)
 
 @app.route("/search")
 @login_required
@@ -320,10 +325,6 @@ def search():
     #             collab_dict[label] = collab[field]
     #     collab_array.append(collab_dict)
     return render_template("search.html", collabs=collabs)
-
-
-
-
 
 
 
@@ -361,14 +362,6 @@ def new_stage(stage, collab_id):
         for k in collab_previous:
             #Search the previous key in select, it should be there...
             if k in collab_select:
-                # Catch special cases where collab_previous = None -> "", SelectionField, "String"
-                # if collab_previous[k] is not None:
-                # Compares SelectionField values between previous&selection
-                # print(k)
-                # print(type(collab_previous[k]))
-                # print(collab_previous[k])
-                # print(collab_select[k])
-
                 if collab_previous[k] is None and type(collab_select[k]) ==  SelectionField:
                     # print("none to SelectionField object")
                     change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k].value))

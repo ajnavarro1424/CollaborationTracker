@@ -1,0 +1,55 @@
+{% extends 'base_test.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <h2>Report</h2>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <table id="report_table" class="table table-striped table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Collaboration ID:</th>
+            <th>{{ collab_select.id }}</th>
+          </tr>
+          <tr>
+            <th>Report Generation Date:</th>
+            <th>{{ report_date }}</th>
+          </tr>
+          <tr>
+            <th>User:</th>
+            <th>{{ current_user.username }}</th>
+          </tr>
+          <tr>
+            <th colspan="2"></th>
+          </tr>
+          {% for stage in stage_dict %}
+          <tr>
+            <th colspan="2" style="text-align:center">{{ stage }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for field in stage_dict[stage]%}
+          <tr>
+            <td class="report-split">{{ labelize(collab_select._fields[field]) }}</td>
+            {% if is_selection(collab_select[field]) %}
+              <td class="report-split">{{ collab_select[field].value }}</td>
+            {% elif field == "date_mod" %}
+              <td class="report-split">{{ collab_select[field].strftime('%Y-%m-%d %I:%M:%S') }}</td>
+            {%else%}
+              <td class="report-split">{{ collab_select[field] }}</td>
+            {% endif %}
+          </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

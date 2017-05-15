@@ -3,7 +3,7 @@ $(document).ready(function(){
 			// this will apply the bootstrap theme if "uitheme" widget is included
 			// the widgetOptions.uitheme is no longer required to be set
 			theme : "bootstrap",
-			widthFixed: true,
+			widthFixed: false,
 			headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
 			// widget code contained in the jquery.tablesorter.widgets.js file
 			// use the zebra stripe widget if you plan on hiding any rows (filter widget)
@@ -21,9 +21,9 @@ $(document).ready(function(){
 			}
 		});
 		// Tablesorter call and config for the audit table
-		$("#audit_table, #search_table").tablesorter({
+		$("#audit-table, #search_table").tablesorter({
 			theme : "bootstrap",
-			widthFixed: true,
+			widthFixed: false,
 			headerTemplate : '{content} {icon}',
 			widgets : [ "uitheme", "filter", "zebra" ],
 			widgetOptions : {
