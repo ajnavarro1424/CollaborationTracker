@@ -14,3 +14,8 @@ table {
 	padding-right: 30px;
 	padding-left: 30px;
 }
+
+/*Report Table Styling*/
+.report-split {
+	width : 50%;
+}

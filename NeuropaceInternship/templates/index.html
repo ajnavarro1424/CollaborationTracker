@@ -48,10 +48,11 @@
               <th>Description</th>
               <th>IRB App. Date</th>
               <th>IRB Exp. Date</th>
-              <th colspan="3" class="sorter-false">
+              <th colspan="4" class="sorter-false">
                 <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Edit<br />
                 <i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i> Archive<br />
-                <i class="fa fa-star-o fa-lg" aria-hidden="true"></i> Favorite
+                <i class="fa fa-star-o fa-lg" aria-hidden="true"></i> Favorite<br>
+                <i class="fa fa-file-text-o fa-lg" aria-hidden="true"></i> Report
               </th>
             </tr>
           </thead>
@@ -87,6 +88,7 @@
                     <a href="/favorite/{{ collab.id }}"><i class="fa fa-star-o fa-lg" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
+                <td><a href="/report/{{ collab.id }}"><i class="fa fa-file-text-o fa-lg" aria-hidden="true"></i></a></td>
 
               </tr>
             {% endfor %}
