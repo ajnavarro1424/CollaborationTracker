@@ -26,26 +26,23 @@
             <th>{{ current_user.username }}</th>
           </tr>
           <tr>
-            <th></th>
-            <th></th>
+            <th colspan="2"></th>
           </tr>
           {% for stage in stage_dict %}
           <tr>
             <th colspan="2" style="text-align:center">{{ stage }}</th>
           </tr>
-          <tr>
-            <th class="report-split" style="text-align:center">Field Name</th>
-            <th class="report-split" style="text-align:center">Field Value</th>
-          </tr>
         </thead>
         <tbody>
           {% for field in stage_dict[stage]%}
           <tr>
-            <td>{{ labelize(collab_select._fields[field]) }}</td>
+            <td class="report-split">{{ labelize(collab_select._fields[field]) }}</td>
             {% if is_selection(collab_select[field]) %}
-              <td>{{ collab_select[field].value }}</td>
-            {% else %}
-              <td>{{ collab_select[field] }}</td>
+              <td class="report-split">{{ collab_select[field].value }}</td>
+            {% elif field == "date_mod" %}
+              <td class="report-split">{{ collab_select[field].strftime('%Y-%m-%d %I:%M:%S') }}</td>
+            {%else%}
+              <td class="report-split">{{ collab_select[field] }}</td>
             {% endif %}
           </tr>
             {% endfor %}

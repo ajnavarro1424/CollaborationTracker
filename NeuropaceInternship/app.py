@@ -362,14 +362,6 @@ def new_stage(stage, collab_id):
         for k in collab_previous:
             #Search the previous key in select, it should be there...
             if k in collab_select:
-                # Catch special cases where collab_previous = None -> "", SelectionField, "String"
-                # if collab_previous[k] is not None:
-                # Compares SelectionField values between previous&selection
-                # print(k)
-                # print(type(collab_previous[k]))
-                # print(collab_previous[k])
-                # print(collab_select[k])
-
                 if collab_previous[k] is None and type(collab_select[k]) ==  SelectionField:
                     # print("none to SelectionField object")
                     change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k].value))

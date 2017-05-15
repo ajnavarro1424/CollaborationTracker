@@ -2,25 +2,25 @@
   {% block content %}
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-8 col-md-offset-2">
         <h2>Audit Log</h2>
         <button class="reset btn btn-primary btn-sm" type="button">Reset Filter / Sort <i class="fa fa-filter" aria-hidden="true"></i></button>
       </div>
     </div>
     <br>
     <div class="row">
-      <div class="col-md-12">
-        <table id="audit_table" class="table table-striped table-bordered tablesorter">
+      <div class="col-md-8 col-md-offset-2">
+        <table id="audit-table" class="table table-striped table-bordered tablesorter">
           <thead>
             <tr>
               <th rowspan="2" class="filter-select filter-exact" data-placeholder="User">User</th>
               <th rowspan="2">Date Changed</th>
               <th rowspan="2">Collaboration ID</th>
-              <th colspan="4" class="changes-header">Changes</th>
+              <th colspan="4" class="changes-header sorter-false">Changes</th>
             </tr>
             <tr>
               <th class="filter-select filter-exact" data-placeholder="Stage">Stage</th>
-              <th>Field</th>
+              <th>Field Name</th>
               <th>Previous Value</th>
               <th>Current Value</th>
             </tr>
@@ -29,13 +29,13 @@
             {% for audit in audits %}
             {% for change in audit.change_list %}
             <tr>
-              <td>{{ audit.username }}</td>
-              <td>{{ audit.date_change.strftime('%Y-%m-%d %I:%M:%S') }}</td>
-              <td>{{ audit.collab_ref }}</td>
-              <td>{{ change.stage }}</td>
-              <td>{{ change.field }}</td>
-              <td>{{ change.previous }}</td>
-              <td>{{ change.current}}</td>
+              <td class="audit-cell">{{ audit.username }}</td>
+              <td class="audit-cell">{{ audit.date_change.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+              <td class="audit-cell">{{ audit.collab_ref }}</td>
+              <td class="audit-cell">{{ change.stage }}</td>
+              <td class="audit-cell">{{ change.field }}</td>
+              <td class="audit-cell">{{ change.previous }}</td>
+              <td class="audit-cell">{{ change.current}}</td>
             </tr>
             {% endfor %}
             {% endfor %}

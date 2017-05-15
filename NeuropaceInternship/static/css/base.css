@@ -1,9 +1,7 @@
-.table-date-td {
-	width: 9%;
-}
-.table-irb-td {
+
+/*.table-irb-td {
 	width: 12%;
-}
+}*/
 
 table {
 	padding-left: 15px;
@@ -18,4 +16,20 @@ table {
 /*Report Table Styling*/
 .report-split {
 	width : 50%;
+}
+
+.audit-cells {
+	width: calc(100%/7);
+}
+
+.search-cell {
+	width: calc(100%/3);
+}
+
+.collab-cell {
+	width: 8%;
+}
+.collab-icon {
+	width: 2.5%;
+	text-align: center;
 }

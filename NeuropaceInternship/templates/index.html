@@ -34,7 +34,7 @@
     <br>
     <div class="row">
       <div class="col-md-12">
-        <table id="collab_table" class="table table-striped table-bordered table-sm tablesorter">
+        <table id="collab_table" class="table table-striped table-bordered table-sm ">
           <thead>
             <tr>
               <th>Date Created</th>
@@ -59,36 +59,36 @@
           <tbody>
             {% for collab in collabs %}
               <tr>
-                <td class="table-date-td">{{ collab.utc_2_local(collab.id.generation_time) }}</td>
-                <td class="table-date-td">{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
-                <td class="table-date-td">{{ collab.id }}</td>
-                <td class="table-date-td">{{ collab.status.value }}</td>
-                <td class="table-date-td">{{ collab.study_identifier}}</td>
-                <td class="table-date-td">{{ collab.neuropace_contact.value}}</td>
+                <td class="collab-cell">{{ collab.utc_2_local(collab.id.generation_time) }}</td>
+                <td class="collab-cell">{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
+                <td class="collab-cell">{{ collab.id }}</td>
+                <td class="collab-cell">{{ collab.status.value }}</td>
+                <td class="collab-cell">{{ collab.study_identifier}}</td>
+                <td class="collab-cell">{{ collab.neuropace_contact.value}}</td>
                 <!--This may need to change to institution_contact, but PI is currently more populated  -->
-                <td class="table-date-td">{{ collab.pi}}</td>
-                <td class="table-date-td">{{ collab.category.value }}</td>
-                <td>{{ collab.description}}</td>
-                <td class="table-date-td">{{ collab.irb_app_date }}</td>
-                <td class="table-date-td">{{ collab.irb_exp_date }}</td>
-                <td>
+                <td class="collab-cell">{{ collab.pi}}</td>
+                <td class="collab-cell">{{ collab.category.value }}</td>
+                <td class="collab-cell">{{ collab.description}}</td>
+                <td class="collab-cell">{{ collab.irb_app_date }}</td>
+                <td class="collab-cell">{{ collab.irb_exp_date }}</td>
+                <td class="collab-icon">
                   <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a>
                 </td>
                 {% if collab.archive == False%}
-                  <td><a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i></a></td>
+                  <td class="collab-icon"><a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i></a></td>
                 {% else %}
-                  <td>
+                  <td class="collab-icon">
                     <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open fa-lg" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
                 {% if current_user in collab.favorite_list%}
-                  <td>  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star fa-lg" aria-hidden="true"></i></a></td>
+                  <td class="collab-icon">  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star fa-lg" aria-hidden="true"></i></a></td>
                 {% else %}
-                  <td>
+                  <td class="collab-icon">
                     <a href="/favorite/{{ collab.id }}"><i class="fa fa-star-o fa-lg" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
-                <td><a href="/report/{{ collab.id }}"><i class="fa fa-file-text-o fa-lg" aria-hidden="true"></i></a></td>
+                <td class="collab-icon"><a href="/report/{{ collab.id }}"><i class="fa fa-file-text-o fa-lg" aria-hidden="true"></i></a></td>
 
               </tr>
             {% endfor %}
