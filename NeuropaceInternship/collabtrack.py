@@ -316,23 +316,12 @@ def report(collab_id):
 @app.route("/search")
 @login_required
 def search():
-
+    # TODO delete collab_objs and collab_array bc they are not being passed to search.html
     collab_objs = Collaboration._fields
     # Grab all the collabs from the database to loop through
     collabs = Collaboration.objects()
     # Build a dictionary with the fields and values
     collab_array = []
-    # for collab in collabs:
-    #     collab_dict = {}
-    #     for field in collab._fields_ordered:
-    #         label = labelize(collab_objs[field])
-    #
-    #         if type(collab[field]) == SelectionField:
-    #             # Adds the key/value pair to the dictionary
-    #             collab_dict[label] = collab[field].value
-    #         else:
-    #             collab_dict[label] = collab[field]
-    #     collab_array.append(collab_dict)
     return render_template("search.html", collabs=collabs)
 
 
@@ -407,17 +396,11 @@ def new_stage(stage, collab_id):
 
     return render_template(stage + '.html', form=form, collab_id=collab_select.id, stage=stage)
 
-
 @app.route("/audit")
 @login_required
 def audit():
     audits = Audit.objects()
     return render_template('audit.html', audits=audits)
-
-
-@app.route("/reports")
-def reports():pass
-
 
 if __name__ == "__main__":
     app.config.update(DEBUG = True, SECRET_KEY = '')
