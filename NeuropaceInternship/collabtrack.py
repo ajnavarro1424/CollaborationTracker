@@ -411,5 +411,4 @@ def reports():pass
 
 if __name__ == "__main__":
     app.config.update(DEBUG = True, SECRET_KEY = '')
-
     app.run()
