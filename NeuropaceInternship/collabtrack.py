@@ -2,30 +2,22 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_assets import Environment
 # Importing mongoengine and forms to our flask framework
-from pymongo import MongoClient
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
 from flask_mongoengine.wtf import model_form
-#This library will help convert the textarea's into inputs for styling
-# from wtforms import widgets, StringField
 # Packages for the login functionality
 from flask_login import UserMixin, LoginManager, login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse, urljoin
-
-from mongoengine import *
+# Test to see if flask_mongoengine covers below
 from mongoengine import signals
 import blinker
-
+#Date libaries for parsing strings and datetime objects
 from datetime import datetime
 import calendar
-from time import gmtime, strftime
 
 # global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
 assets = Environment(app)
-# Pymongo setup
-# client = MongoClient('localhost', 27017)
-# app.mdb = client.test_database
-# collaborations = app.mdb.collaborations
+
 #MongoEngine setup
 mdb = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(mdb)
@@ -34,22 +26,35 @@ app.session_interface = MongoEngineSessionInterface(mdb)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+    ############################
+    #### Model Creation     ####
+    ############################
+
+# User model defines the fields necessary for login
 class User(mdb.Document, UserMixin):
     username = mdb.StringField(pk = True)
     password = mdb.StringField()
     def get_id(self):
      return self.username
 
+# Necessary for Flask-Login to load the user
+@login_manager.user_loader
+def load_user(user_id):
+ return User.objects(username=user_id).first()
+
+# SelectionField generates dropdown-menus in forms
 class SelectionField(mdb.Document):
     value = mdb.StringField()
     field_name = mdb.StringField()
-# Model used to build our collection by passing our documents (document object)
+
+# Collaboration model represents the form fields for all workflows
 class Collaboration(mdb.Document):
+    # Variables to add functionality to colalboration views
     archive = mdb.BooleanField(default = False)
     date_mod = mdb.DateTimeField(label = "Date Modified")
     favorite_list = mdb.ListField(mdb.ReferenceField(User))
-    #Collaboration class will contain all the fields for all WF
-    # Initiate Form values
+
+    # Initiation form values
     new_new_tag = mdb.StringField(label = 'NEW NEW TAG')
     entry_date = mdb.StringField(label = "Entry date", max_length = 1000)
     entered_by = mdb.StringField(label = "Entered by", max_length = 1000)
@@ -60,6 +65,7 @@ class Collaboration(mdb.Document):
     reason = mdb.ReferenceField(SelectionField, label = "Reason for Collaboration")#dropdown-menu
     category = mdb.ReferenceField(SelectionField) #dropdown-menu
     init_notes = mdb.StringField(label = "Initiation Notes")
+
     # Details workflow (Flow2/Pg1 is Green-light or Red-light)
     neuropace_contact = mdb.ReferenceField(SelectionField, label = "NeuroPace Contact") #dropdown-menu
     sharing_method = mdb.ReferenceField(SelectionField, label = "Data Sharing Method") #dropdown-menu
@@ -76,6 +82,7 @@ class Collaboration(mdb.Document):
     accessories_language = mdb.ReferenceField(SelectionField, label = "Research Accessories Language") #dropdown-menu
     single_multi_center = mdb.ReferenceField(SelectionField, label = "Single or Multi-Center") #dropdown-menu
     detail_notes = mdb.StringField()
+
     #Contracts and Financials (Flow2/Pg3)
     funding_source = mdb.ReferenceField(SelectionField) #dropdown-menu
     np_compensation = mdb.BooleanField(label = "Compensated by NP?")
@@ -87,13 +94,14 @@ class Collaboration(mdb.Document):
     contract_status = mdb.ReferenceField(SelectionField, label = "Contract Status")
     contract_approval_date = mdb.StringField(max_length = 1000)
     contract_notes = mdb.StringField()
+
     #Legal(Flow4/Pg.4)
-    # Not Tracked values caused DateTimeField to fail.
     approval_date = mdb.StringField(label='NP Study Sharing Approval Date', max_length = 1000)
     approval_by = mdb.ReferenceField(SelectionField, label='NP Sharing Approval By') # dropdown-menu
     irb_app_date = mdb.StringField(label = 'Initial IRB App Date', max_length = 1000)
     irb_exp_date = mdb.StringField(label = 'Latest IRB Exp Date', max_length = 1000)
-    # Legal continued(.pdf values)
+
+    # Legal continued(.pdf exclusive values)
     pc_research_acc = mdb.BooleanField(label = "Protocol Coverage for Research Accessories")
     pc_data_sharing = mdb.BooleanField(label = "Protocol Coverage for Data Sharing")
     icfc_data_sharing = mdb.BooleanField(label = "ICF Coverage for Data Sharing")
@@ -106,43 +114,48 @@ class Collaboration(mdb.Document):
     box_link = mdb.StringField(label = 'BOX Link', max_length = 1000)
     notes = mdb.StringField()
 
-    #Converts UTC time to local time
+    #Converts UTC time to local time, necessary for native datetime objects
     def utc_2_local(self, field):
         TIME_FORMAT = '%Y-%m-%d %I:%M:%S'
         timestamp =  calendar.timegm(field.timetuple())
         local = datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
         return local
 
+    #Updates the date_mod field to the current date when collab changes.
+    def update_modified(sender, document):
+        if document._class_name == 'Collaboration':
+            document.date_mod = datetime.today()
+
+    #Calls to update date_mod before all DB saves.
+    signals.pre_save.connect(update_modified)
+
+# Part of the Audit model, captures changes made to collaboration fields.
 class Change(mdb.EmbeddedDocument):
     stage = mdb.StringField()
     field = mdb.StringField()
     previous = mdb.StringField()
     current = mdb.StringField()
 
+# Audit model captures all data regarding field change.
 class Audit(mdb.Document):
     date_change = mdb.DateTimeField()
     username = mdb.StringField()
     collab_ref = mdb.StringField()
     change_list = mdb.ListField(mdb.EmbeddedDocumentField(Change))
 
+    ############################
+    #### Helper Methods     ####
+    ############################
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.objects(username=user_id).first()
-
-
-def update_modified(sender, document):
-    if document._class_name == 'Collaboration':
-        document.date_mod = datetime.today()
-
-signals.pre_save.connect(update_modified)
-
+# Takes MongoDB field object, checks for label attribute
+# Returns label or titled variable name.
 def labelize(field):
     if hasattr(field, "label"):
         return field.label
     return field.db_field.replace('_', ' ').title()
 
+# Takes in Collaboration model with a field list(only), and builds field_args(labels)
+# Returns model_form(WTF forms) for the given stage.
 def collab_model_form(model, only, field_args={}, **kwargs):
     for field_name in only:
         field = model._fields[field_name]
@@ -150,9 +163,7 @@ def collab_model_form(model, only, field_args={}, **kwargs):
         if field_name in field_args:
             field_args[field_name]['label'] = labelize(field)
         else:
-            field_args[field_name] = {'label': labelize(field)
-
-                                    }
+            field_args[field_name] = {'label': labelize(field)}
         if type(field) == mdb.ReferenceField:
             field_args[field_name] = {'label_attr' : 'value',
                                  'queryset': SelectionField.objects(field_name=field_name),
@@ -161,34 +172,7 @@ def collab_model_form(model, only, field_args={}, **kwargs):
                                  'blank_text':u'--Enter Selection--'}
     return model_form(model, only=only, field_args=field_args, **kwargs)
 
-def generate_id():
-    collab = Collaboration()
-    return collab.save()
-
-@app.context_processor
-def utility_processor():
-    def is_selection(collab_value):
-        if type(collab_value) == SelectionField:
-            return True
-        else:
-            return False
-
-    def labelize(obj):
-        if hasattr(obj, "label"):
-            return obj.label
-        return obj.db_field.replace('_', ' ').title()
-
-    # def stage_finder(field):
-    #     for stage in stage_dict
-    #         if field in stage:
-    #             return stage
-    #         else:
-    #             return "init"
-
-    return dict(is_selection = is_selection, labelize=labelize)
-
-
-
+# form_dict generates the appropirate model_form call when a specific stage is passed to the route.
 form_dict = {
             'init' : collab_model_form(Collaboration, ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes']),
             'details' : collab_model_form(Collaboration, ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes']),
@@ -197,13 +181,36 @@ form_dict = {
             'closure' : collab_model_form(Collaboration, ['status', 'box_link', 'notes'])
             }
 
+
+# Helper methods for Jinja2 templating
+# They can be called from the template for processing of fields
+@app.context_processor
+def utility_processor():
+    #Takes in a collaboration value(String or a SelectionField), and returns a boolean
+    def is_selection(collab_value):
+        if type(collab_value) == SelectionField:
+            return True
+        else:
+            return False
+    # Takes a MongoDB object, and checks if a label attribute exists, returns appropriate lable.
+    def labelize(obj):
+        if hasattr(obj, "label"):
+            return obj.label
+        return obj.db_field.replace('_', ' ').title()
+
+    return dict(is_selection = is_selection, labelize=labelize)
+
+
+
+# Used exclusively in Report View, ties the stage variable to the associated form fields.
+# Looped through, and the field array queries a collab with "collab[field]"
 stage_dict = {
-    'Initiation' : ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes'],
-    'Details' : ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes'],
-    'Contract' : ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes'],
-    'Legal' : ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes'],
-    'Closure' : ['status', 'box_link', 'notes']
-    }
+            'Initiation' : ['date_mod','entry_date', 'entered_by', 'date_needed', 'institution', 'institution_contact', 'pi', 'reason', 'category', 'status', 'init_notes'],
+            'Details' : ['neuropace_contact', 'sharing_method', 'study_title', 'description', 'dataset_description', 'phi_present', 'share_type', 'sharing_language', 'study_type', 'study_identifier', 'risk_level', 'accessories_needed', 'accessories_language', 'single_multi_center','status', 'detail_notes'],
+            'Contract' : ['funding_source', 'np_consultant', 'np_compensation', 'contract_needed','contract_status', 'budget_needed', 'status', 'contract_notes'],
+            'Legal' : ['approval_date', 'approval_by', 'irb_app_date', 'irb_exp_date', 'status', 'legal_notes'],
+            'Closure' : ['status', 'box_link', 'notes']
+            }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
 
@@ -221,7 +228,7 @@ def login(username):
         login_user(user)
         next = request.args.get('next')
         if not is_safe_url(next):
-            flash('URL is not safe, hide your kids, hide your wife.')
+            flash('URL is not safe')
             return flask.abort(400)
         flash('Logged in successfully.')
         return redirect(next or url_for('main'))
@@ -237,11 +244,13 @@ def logout():
     return redirect("/")
 
 
-#### MAIN
+    ############################
+    #### Routes             ####
+    ############################
+
 @app.route("/")
 def main():
     collabs = Collaboration.objects(archive = False)
-
     return render_template('index.html', collabs=collabs)
 ####
 @app.route("/filter/<list>")
@@ -335,8 +344,9 @@ def search():
 def new_stage(stage, collab_id):
     #If new collaboration started, create collaboration document in db
     if collab_id == "none":
-        #Generate a collab_id with generate_id
-        collab_select = generate_id()
+        #Create a new collaboraiton object and save to DB
+        collab_select = Collaboration()
+        collab_select.save()
     else:
         #Select the collab, given the collab_id(could be blank, or populated)
         collab_select = Collaboration.objects(id=collab_id).first()
