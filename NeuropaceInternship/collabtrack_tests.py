@@ -11,15 +11,16 @@ class TestCase(unittest.TestCase):
         # Creates a connection to a test db
         # Creates necessary db contents for testing
         connect('test_db', host='mongomock://localhost')
+        self.app = app.test_client()
         # conn = get_connection('test_db')
         # self.db_fd, .app.config['DATABASE'] = tempfile.mkstemp()
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['DEBUG'] = False
 
-        # app = app.test_client()
-        # with app.app_context():
-        #     app.init_db()
+        with app.app_context():
+            # app.init_db()
+            pass
 
     def test_main_page(self):
         response = self.app.get('/')
