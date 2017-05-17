@@ -72,21 +72,21 @@ class Collaboration(mdb.Document):
     study_title = mdb.StringField(max_length = 1000)
     description = mdb.StringField(max_length = 1000)
     dataset_description = mdb.ReferenceField(SelectionField, label = "Data Set Description") #dropdown-menu
-    phi_present = mdb.BooleanField(label = "PHI Present")
+    phi_present = mdb.BooleanField(label = "PHI Present", default = False)
     share_type = mdb.ReferenceField(SelectionField, label = "Data Share Type") #dropdown-menu
     sharing_language = mdb.ReferenceField(SelectionField, label = "Data Sharing Language") #dropdown-menu
     study_type = mdb.ReferenceField(SelectionField) #dropdown-menu
     study_identifier = mdb.StringField(max_length = 1000)
     risk_level = mdb.ReferenceField(SelectionField, label = "Study Risk Level") #dropdown-menu
-    accessories_needed = mdb.BooleanField(label = "Research Accessories Needed?")
+    accessories_needed = mdb.BooleanField(label = "Research Accessories Needed?", default = False)
     accessories_language = mdb.ReferenceField(SelectionField, label = "Research Accessories Language") #dropdown-menu
     single_multi_center = mdb.ReferenceField(SelectionField, label = "Single or Multi-Center") #dropdown-menu
     detail_notes = mdb.StringField()
 
     #Contracts and Financials (Flow2/Pg3)
     funding_source = mdb.ReferenceField(SelectionField) #dropdown-menu
-    np_compensation = mdb.BooleanField(label = "Compensated by NP?")
-    np_consultant = mdb.BooleanField(label = "Consultant to NP?")
+    np_compensation = mdb.BooleanField(label = "Compensated by NP?", default = False)
+    np_consultant = mdb.BooleanField(label = "Consultant to NP?", default = False)
     contract_needed = mdb.ReferenceField(SelectionField, label = "Contract Needed?") # dropdown-menu
     budget_needed = mdb.StringField(label = "Budget Needed?",max_length = 1000)
     inv_sites_approval_req = mdb.StringField(label = "Inv Sites Approval Req'd", max_length = 1000)
@@ -187,7 +187,7 @@ form_dict = {
 @app.context_processor
 def utility_processor():
     #Takes in a collaboration value(String or a SelectionField), and returns a boolean
-    def is_selection(collab_value):
+    def not_string(collab_value):
         if type(collab_value) == SelectionField:
             return True
         else:
@@ -198,7 +198,7 @@ def utility_processor():
             return obj.label
         return obj.db_field.replace('_', ' ').title()
 
-    return dict(is_selection = is_selection, labelize=labelize)
+    return dict(not_string = not_string, labelize=labelize)
 
 
 
@@ -213,6 +213,11 @@ stage_dict = {
             }
 
 stage_array = ["init", "details", "contract", "legal", "closure"]
+
+
+    ############################
+    #Login Functions and Routes#
+    ############################
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -316,18 +321,12 @@ def report(collab_id):
 @app.route("/search")
 @login_required
 def search():
-    # TODO delete collab_objs and collab_array bc they are not being passed to search.html
-    collab_objs = Collaboration._fields
     # Grab all the collabs from the database to loop through
     collabs = Collaboration.objects()
-    # Build a dictionary with the fields and values
-    collab_array = []
+    
     return render_template("search.html", collabs=collabs)
 
-
-
-# Abstracted new/edit collaboration workflow that takes in a stage and collab_id
-# and generates the appropriate view and form.
+# Workflow routes that takke a stage and collab_id. Generates and submits forms.
 @app.route("/new/<stage>/<collab_id>", methods=["GET","POST"])
 @login_required
 def new_stage(stage, collab_id):
@@ -337,7 +336,7 @@ def new_stage(stage, collab_id):
         collab_select = Collaboration()
         collab_select.save()
     else:
-        #Select the collab, given the collab_id(could be blank, or populated)
+        #Select the collab, given the collab_id
         collab_select = Collaboration.objects(id=collab_id).first()
         #Create a duplicate object, for comparision for audit log
         collab_previous = Collaboration.objects(id=collab_id).first()
@@ -346,55 +345,49 @@ def new_stage(stage, collab_id):
     # If formdata is empty or not provided, this object is checked for attributes matching form field names,
     # which will be used for field values.
     form = form_stage(request.form, obj=collab_select)
-
     if request.method == 'POST' and form.validate_on_submit():
         del(form.csrf_token)
-        # Save whats on the form into the selected collab
-        # Check to see if there were changes to any fields, if so, save them in an audit doc
         form.populate_obj(collab_select)
         form_current = form._fields
+        # Save whats on the form into the selected collab
         collab_select.save()
-        # raise("gimme console")
-        #Look through both dictionaries, if the key/value pairs are different save them audit document
+        #Call audit_save to save changes made to any fields
+        audit_save(collab_previous, collab_select, stage)
         # Checks to see if stage is closure to return back to homepage
-        change_list = []
-        for k in collab_previous:
-            #Search the previous key in select, it should be there...
-            if k in collab_select:
-                if collab_previous[k] is None and type(collab_select[k]) ==  SelectionField:
-                    # print("none to SelectionField object")
-                    change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k].value))
-                    change_list.append(change)
-
-                elif type(collab_previous[k]) == SelectionField :
-                    if collab_previous[k].value != collab_select[k].value:
-                        # print("inside sleection field and different")
-                        change = Change(stage = stage, field = k, previous = str(collab_previous[k].value), current = str(collab_select[k].value))
-                        change_list.append(change)
-                # Compares non-SelectionField values between previous&selection, if they are not date_mod
-                elif k != 'date_mod' and collab_previous[k] != collab_select[k]:
-                    if collab_previous[k] is None and collab_select[k] != "":
-                        change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
-                        change_list.append(change)
-                    elif collab_previous[k] is not None and collab_select[k] != "":
-                        change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
-                        change_list.append(change)
-
-        # If there are changes, create an audit object and save both
-        if len(change_list) > 0:
-            audit = Audit(date_change = datetime.today(), collab_ref = str(collab_select.id), username = current_user.username, change_list = change_list)
-            # print("about to save audit wooh")
-            audit.save()
-            # raise "wtf selection field object??"
-
         if stage == 'closure':
             flash("Collaboration %s saved in DB" %collab_select.id)
             return redirect('/')
         flash(f"Stage {stage.title()} saved for Collaboration {collab_select.id}")
-        return redirect('/new/'+ stage_array[stage_array.index(stage)+1] +'/'+ collab_id )#redirect to the next stage
+        return redirect('/new/'+ stage_array[stage_array.index(stage)+1] +'/'+ collab_id )
     # Render the view given the stage
-
     return render_template(stage + '.html', form=form, collab_id=collab_select.id, stage=stage)
+
+
+def audit_save(collab_previous, collab_select, stage):
+    #Look through both dictionaries, if the key/value pairs are different save them audit document
+    change_list = []
+    for k in collab_previous:
+        # Use collab_previous keys(fields) to loop thorugh collab_select to compare values.
+        if k in collab_select:
+            # Edge case: None cannot have .value() called, needs separate conditional
+            if collab_previous[k] is None and type(collab_select[k]) ==  SelectionField:
+                change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k].value))
+                change_list.append(change)
+            # This conditional catches differences in SelectionFields
+            elif type(collab_previous[k]) == SelectionField :
+                if collab_previous[k].value != collab_select[k].value:
+                    change = Change(stage = stage, field = k, previous = str(collab_previous[k].value), current = str(collab_select[k].value))
+                    change_list.append(change)
+            # This conditional catches differences in StringFields, if they are not date_mod
+            elif k != 'date_mod' and collab_previous[k] != collab_select[k]:
+                if collab_select[k] != "":
+                    change = Change(stage = stage, field = k, previous = str(collab_previous[k]), current = str(collab_select[k]))
+                    change_list.append(change)
+    # If there are changes, create and save audit and change_list
+    if len(change_list) > 0:
+        audit = Audit(date_change = datetime.today(), collab_ref = str(collab_select.id), username = current_user.username, change_list = change_list)
+        audit.save()
+
 
 @app.route("/audit")
 @login_required
