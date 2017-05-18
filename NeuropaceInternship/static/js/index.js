@@ -1,5 +1,5 @@
 $(document).ready(function(){
-		$("#collab_table").tablesorter({
+		$("#collab_table, #audit-table, #search_table").tablesorter({
 			// this will apply the bootstrap theme if "uitheme" widget is included
 			// the widgetOptions.uitheme is no longer required to be set
 			theme : "bootstrap",
@@ -20,27 +20,17 @@ $(document).ready(function(){
 				filter_cssFilter: "form-control"
 			}
 		});
-		// Tablesorter call and config for the audit table
-		$("#audit-table, #search_table").tablesorter({
-			theme : "bootstrap",
-			widthFixed: false,
-			headerTemplate : '{content} {icon}',
-			widgets : [ "uitheme", "filter", "zebra" ],
-			widgetOptions : {
-				zebra : ["even", "odd"],
-				// class names added to columns when sorted
-				columns: [ "primary", "secondary", "tertiary" ],
-				// reset filters button
-				filter_reset : ".reset",
-				// extra css class name (string or array) added to the filter element (input or select)
-				filter_cssFilter: "form-control"
-			}
-		});
 		// Reset table function defined for the reset sort/filter buttons
 		$('.reset').click(function(){
 			$('table').trigger('sortReset');
 			$('table').trigger('filterReset');
 			return false;
 		});
+
+
+
+		// $('.fa fa-folder-open-o fa-lg').click(function(){
+		//
+		// });
 
 });
