@@ -13,7 +13,7 @@ import blinker
 #Date libaries for parsing strings and datetime objects
 from datetime import datetime
 import calendar
-
+# TODO: Move global inits into its own __init__.py file.
 # global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
 assets = Environment(app)
@@ -121,26 +121,26 @@ class Collaboration(mdb.Document):
         local = datetime.fromtimestamp(timestamp).strftime(TIME_FORMAT)
         return local
 
-    #Updates the date_mod field to the current date when collab changes.
-    def update_modified(sender, document):
-        if document._class_name == 'Collaboration':
-            document.date_mod = datetime.today()
+#Updates the date_mod field to the current date when collab changes.
+def update_modified(sender, document):
+    if document._class_name == 'Collaboration':
+        document.date_mod = datetime.today()
 
-    #Calls to update date_mod before all DB saves.
-    signals.pre_save.connect(update_modified)
+#Calls to update date_mod before all DB saves.
+signals.pre_save.connect(update_modified)
 
 # Part of the Audit model, captures changes made to collaboration fields.
 class Change(mdb.EmbeddedDocument):
-    stage = mdb.StringField()
-    field = mdb.StringField()
-    previous = mdb.StringField()
-    current = mdb.StringField()
+    stage = mdb.StringField(max_length = 1000)
+    field = mdb.StringField(max_length = 1000)
+    previous = mdb.StringField(max_length = 1000)
+    current = mdb.StringField(max_length = 1000)
 
 # Audit model captures all data regarding field change.
 class Audit(mdb.Document):
     date_change = mdb.DateTimeField()
-    username = mdb.StringField()
-    collab_ref = mdb.StringField()
+    username = mdb.StringField(max_length = 1000)
+    collab_ref = mdb.StringField(max_length = 1000)
     change_list = mdb.ListField(mdb.EmbeddedDocumentField(Change))
 
     ############################
@@ -192,12 +192,7 @@ def utility_processor():
             return True
         else:
             return False
-    # Takes a MongoDB object, and checks if a label attribute exists, returns appropriate lable.
-    def labelize(obj):
-        if hasattr(obj, "label"):
-            return obj.label
-        return obj.db_field.replace('_', ' ').title()
-
+    #Labelize definition is on line 152
     return dict(not_string = not_string, labelize=labelize)
 
 
@@ -212,6 +207,8 @@ stage_dict = {
             'Closure' : ['status', 'box_link', 'notes']
             }
 
+
+# TODO: stage_array needs to go into the Collaboration object
 stage_array = ["init", "details", "contract", "legal", "closure"]
 
 
@@ -228,7 +225,7 @@ def is_safe_url(target):
 @app.route('/login/<username>', methods=['GET', 'POST'])
 def login(username):
     # Find or create a user with the given username...
-    user = User.objects(username = username).first()
+    user = User.objects.get(username=username)
     if user is not None:
         login_user(user)
         next = request.args.get('next')
@@ -257,7 +254,7 @@ def logout():
 def main():
     collabs = Collaboration.objects(archive = False)
     return render_template('index.html', collabs=collabs)
-####
+
 @app.route("/filter/<list>")
 def list(list):
     #Returns a specific list of collabs based on passed URL variable
@@ -267,6 +264,7 @@ def list(list):
         collabs = Collaboration.objects(favorite_list = current_user.id)
     elif list == "archived":
         collabs = Collaboration.objects(archive = True)
+    # TODO: Thow a 404 if you try to see a list that doesnt exist
 
     return render_template('index.html', collabs=collabs)
 
@@ -281,6 +279,7 @@ def favorite(collab_id):
         collab_select.favorite_list.append(current_user.id)
         flash("Collaboration %s ADDED to favorites." % collab_select.id)
     else:
+        # Toggle's the user in the favorite_list.
         for user in collab_select.favorite_list:
             if current_user.username == user.username:
                 # Removes user object id from collab's favorite list.
@@ -291,6 +290,7 @@ def favorite(collab_id):
                 collab_select.favorite_list.append(current_user.id)
                 flash("Collaboration %s ADDED to favorites." % collab_select.id)
     collab_select.save()
+    # TODO: Thow a 404 if you try to pass a collab id that doesnt exist that doesnt exist
     return redirect("/")
 
 # Should be a POST, but as a link a GET is more convienent.
@@ -323,7 +323,6 @@ def report(collab_id):
 def search():
     # Grab all the collabs from the database to loop through
     collabs = Collaboration.objects()
-    
     return render_template("search.html", collabs=collabs)
 
 # Workflow routes that takke a stage and collab_id. Generates and submits forms.
@@ -337,9 +336,7 @@ def new_stage(stage, collab_id):
         collab_select.save()
     else:
         #Select the collab, given the collab_id
-        collab_select = Collaboration.objects(id=collab_id).first()
-        #Create a duplicate object, for comparision for audit log
-        collab_previous = Collaboration.objects(id=collab_id).first()
+        collab_select = Collaboration.objects.get(id=collab_id)
     # Render the appropriate form given the stage
     form_stage = form_dict[stage]
     # If formdata is empty or not provided, this object is checked for attributes matching form field names,
@@ -349,6 +346,8 @@ def new_stage(stage, collab_id):
         del(form.csrf_token)
         form.populate_obj(collab_select)
         form_current = form._fields
+        #Create a duplicate object, for comparision for audit log
+        collab_previous = Collaboration.objects.get(id=collab_id)
         # Save whats on the form into the selected collab
         collab_select.save()
         #Call audit_save to save changes made to any fields
@@ -366,6 +365,7 @@ def new_stage(stage, collab_id):
 def audit_save(collab_previous, collab_select, stage):
     #Look through both dictionaries, if the key/value pairs are different save them audit document
     change_list = []
+    # TODO: What happens if the object fields dont match???? Matt slack. ADD AN ELSE Mother fucker.
     for k in collab_previous:
         # Use collab_previous keys(fields) to loop thorugh collab_select to compare values.
         if k in collab_select:
