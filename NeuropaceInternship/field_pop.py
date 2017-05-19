@@ -1,9 +1,8 @@
-from app import Collaboration, SelectionField, update_modified, User, Audit
+from collabtrack import Collaboration, SelectionField, User, Audit, mdb
 # Packages for the login functionality - copied from appy.py because login_required wasn't being recognized without explicitly calling it here.
 from flask_login import UserMixin, LoginManager, login_required
 from urllib.parse import urlparse, urljoin
 
-from app import mdb
 import csv
 
 

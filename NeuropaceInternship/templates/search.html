@@ -19,15 +19,17 @@
         <tbody>
           {% for collab in collabs %}
             {% for field in collab._fields %}
-              <tr>
-                <td class="search-cell"><a href="/new/init/{{ collab.id }}">{{ collab.id }}</a></td>
-                <td class="search-cell">{{ labelize(collab._fields[field]) }}</td>
-                {% if is_selection(collab[field]) %}
-                  <td class="search-cell">{{ collab[field].value }}</td>
-                {% else %}
-                  <td class="search-cell">{{ collab[field] }}</td>
-                {% endif %}
-              </tr>
+              {% if field not in ("archive", "date_mod", "favorite_list") %}
+                <tr>
+                  <td class="search-cell"><a href="/new/init/{{ collab.id }}">{{ collab.id }}</a></td>
+                  <td class="search-cell">{{ labelize(collab._fields[field]) }}</td>
+                  {% if not_string(collab[field]) %}
+                    <td class="search-cell">{{ collab[field].value }}</td>
+                  {% else %}
+                    <td class="search-cell">{{ collab[field] }}</td>
+                  {% endif %}
+                </tr>
+              {% endif %}
             {% endfor %}
           {% endfor %}
         </tbody>
