@@ -27,19 +27,41 @@ $(document).ready(function(){
 			return false;
 		});
 
+		//Column 12 is archived, 13 is favorites
+		$("#btn-show-fav").click(function(){
+			console.log("got button show favorites");
+			var filters = [];
+			filters[13] = 'true';
+			$.tablesorter.setFilters( $('table'), filters, true);
+		});
+
+		$("#btn-show-arc").click(function() {
+			console.log("got button show archived");
+			var filters = [];
+			filters[12] = 'true';
+			$.tablesorter.setFilters( $('table'), filters, true);
+		});
+
 
 
 		$('.btn-archive').click(function(){
 			$.post("/archive",
 						  {collab_id : $(this).attr('id').split("_").pop() },
 							function(data, status){
-								var collab_row = $("#archive_"+ data.collab_id).closest("tr");
-								if (data.success) {
-									collab_row.remove();
+								var archived_td = $("#archive_"+ data.collab_id);
+								if (data.archived) {
+									archived_td.removeClass('fa-folder-open-o').addClass('fa-folder-open')
 									$("#ajax_flash_msg")
 										.html("<p>Successfully archived " + data.new_new_tag + "</p>");
+								} else {
+									archived_td.removeClass('fa-folder-open').addClass('fa-folder-open-o')
+									$("#ajax_flash_msg")
+										.html("<p>Successfully un-archived " + data.new_new_tag + "</p>");
 								}
+								// Trigger the table filter with existing params
+								$('table').trigger('update', true);
 							}
+
 						);
 		});
 

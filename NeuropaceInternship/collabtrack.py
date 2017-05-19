@@ -254,7 +254,8 @@ def logout():
 
 @app.route("/")
 def main():
-    collabs = Collaboration.objects(archive = False)
+    # collabs = Collaboration.objects(archive = False)
+    collabs = Collaboration.objects()
     return render_template('index.html', collabs=collabs)
 
 @app.route("/filter/<list>")
@@ -299,6 +300,8 @@ def favorite(collab_id):
 @app.route("/archive", methods=["POST"])
 @login_required
 def archive():
+    ''' Toggle the archived state on a collaboration.
+        Meant to be called via AJAX'''
     # Pull collab for archiving
     collab_select = Collaboration.objects.get(id=request.form['collab_id'])
     # Check the archive status and save opposite
@@ -312,6 +315,7 @@ def archive():
     print("Just above the return")
     # redirect to the index page where the archived collab will have disappeared
     return jsonify(collab_id=str(collab_select.id), success=True,
+                   archived=collab_select.archive,
                    new_new_tag=str(collab_select.new_new_tag))
 
 @app.route("/report/<collab_id>", methods=["GET"])
@@ -398,6 +402,33 @@ def audit_save(collab_previous, collab_select, stage):
 def audit():
     audits = Audit.objects()
     return render_template('audit.html', audits=audits)
+
+#MSB DEBUG ONLY
+@app.route("/fav/debug", methods=["GET"])
+def fav():
+    #Grab collab object from db with collab_id
+    u = User.objects.get(username='bauer123')
+    collabs = Collaboration.objects(pi = 'Erik Kobylarz').all()
+    for collab_select in collabs:
+        if len(collab_select.favorite_list) == 0:
+            #Add favorited collab to user list of favorites
+            collab_select.favorite_list.append(u.id)
+            flash("Collaboration %s ADDED to favorites." % collab_select.id)
+        else:
+            # Toggle's the user in the favorite_list.
+            for user in collab_select.favorite_list:
+                if u.username == user.username:
+                    # Removes user object id from collab's favorite list.
+                    collab_select.favorite_list.remove(user)
+                    flash("Collaboration %s REMOVED from favorites" %collab_select.id)
+                else:
+                    #Add favorited collab to user list of favorites
+                    collab_select.favorite_list.append(u.id)
+                    flash("Collaboration %s ADDED to favorites." % collab_select.id)
+        collab_select.save()
+    # TODO: Thow a 404 if you try to pass a collab id that doesnt exist that doesnt exist
+    return redirect("/")
+
 
 if __name__ == "__main__":
     app.config.update(DEBUG = True, SECRET_KEY = '')

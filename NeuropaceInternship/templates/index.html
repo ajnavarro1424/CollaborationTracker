@@ -24,9 +24,9 @@
     </div>
     <div class="row">
       <div class="col-sm-6">
-        <a class="btn btn-primary btn-inverse btn-sm" href="/filter/all">Show Active & Archive <i class="fa fa-th-list fa-lg" aria-hidden="true"></i></a>
-        <a class="btn btn-primary btn-sm" href="/filter/archived">Show Archive <i class="fa fa-folder fa-lg" aria-hidden="true"></i></a>
-        <a class="btn btn-primary btn-sm" href="/filter/favorites">Show Favorites <i class="fa fa-star fa-lg" aria-hidden="true"></i></a>
+        <button id="btn-show-all" class="btn btn-primary btn-inverse btn-sm" type="button">Show Active & Archive <i class="fa fa-th-list fa-lg" aria-hidden="true"></i></button>
+        <button id="btn-show-arc" class="btn btn-primary btn-sm" type="button">Show Archive <i class="fa fa-folder fa-lg" aria-hidden="true"></i></button>
+        <button id="btn-show-fav" class="btn btn-primary btn-sm" type="button">Show Favorites <i class="fa fa-star fa-lg" aria-hidden="true"></i></button>
         <button class="reset btn btn-primary btn-sm" type="button">Reset Filter / Sort <i class="fa fa-filter fa-lg" aria-hidden="true"></i></button>
       </div>
       <div class="col-sm-6">
@@ -76,25 +76,26 @@
                   <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a>
                 </td>
                 {% if collab.archive == False%}
-                  <td class="collab-icon">
-
-                      <i id="archive_{{collab.id}}" class="btn-archive fa fa-folder-open-o fa-lg" aria-hidden="true"></i>
+                  <td class="collab-icon" data-text="false">
+                    <i id="archive_{{collab.id}}"
+                     class="btn-archive fa fa-folder-open-o fa-lg"
+                     aria-hidden="true"></i>
 
                   </td>
                 {% else %}
-                  <td class="collab-icon">
-                    <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open fa-lg" aria-hidden="true"></i></a>
+                  <td class="collab-icon" data-text="true">
+                    <i id="archive_{{collab.id}}" class="btn-archive fa fa-folder-open fa-lg"   aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
                 {% if current_user in collab.favorite_list%}
-                  <td class="collab-icon">  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star fa-lg" aria-hidden="true"></i></a></td>
+                  <td class="collab-icon" data-text="true">  <a href="/favorite/{{ collab.id }}"><i class="fa fa-star fa-lg" aria-hidden="true"></i></a></td>
                 {% else %}
-                  <td class="collab-icon">
+                  <td class="collab-icon" data-text="false">
                     <a href="/favorite/{{ collab.id }}"><i class="fa fa-star-o fa-lg" aria-hidden="true"></i></a>
                   </td>
                 {% endif %}
                 <td class="collab-icon"><a href="/report/{{ collab.id }}"><i class="fa fa-file-text-o fa-lg" aria-hidden="true"></i></a></td>
-
+                </td>
               </tr>
             {% endfor %}
           </tbody>
