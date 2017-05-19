@@ -49,8 +49,8 @@
               <th>IRB App. Date</th>
               <th>IRB Exp. Date</th>
               <th colspan="4" class="sorter-false">
-                <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Edit<br />
-                <i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i> Archive<br />
+                <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Edit<br>
+                <i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i> Archive<br>
                 <i class="fa fa-star-o fa-lg" aria-hidden="true"></i> Favorite<br>
                 <i class="fa fa-file-text-o fa-lg" aria-hidden="true"></i> Report
               </th>
@@ -75,7 +75,11 @@
                   <a href="/new/init/{{ collab.id }}"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a>
                 </td>
                 {% if collab.archive == False%}
-                  <td class="collab-icon"><a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i></a></td>
+                  <td class="collab-icon">
+                    <a href="/archive/{{ collab.id }}">
+                      <i id="archive_{{collab.study_identifier}}" class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i>
+                    </a>
+                  </td>
                 {% else %}
                   <td class="collab-icon">
                     <a href="/archive/{{ collab.id }}"><i class="fa fa-folder-open fa-lg" aria-hidden="true"></i></a>
