@@ -41,10 +41,13 @@ class TestCase(LiveServerTestCase):
         assert 'Logged in successfully.' in self.driver.page_source
 
         #When Archive button is clicked, remove collaboration from list
-        btn_archive = self.driver.find_element_by_id('archive_15-000548')
+        btn_archive_list = self.driver.find_elements_by_class_name('btn-archive')
 
-        btn_archive.click()
-        assert '15-000548' not in self.driver.page_source
+        to_archive_id = btn_archive_list[0].get_attribute('id')
+        self.assertIn(to_archive_id, self.driver.page_source,
+                      "Can't find id %s" % to_archive_id)
+        btn_archive_list[0].click()
+        assert to_archive_id not in self.driver.page_source
 
 
     # def new_collab(self):

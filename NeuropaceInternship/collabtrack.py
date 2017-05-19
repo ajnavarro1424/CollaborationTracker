@@ -1,5 +1,6 @@
 # Importing flask packages
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, \
+                  jsonify
 from flask_assets import Environment
 # Importing mongoengine and forms to our flask framework
 from flask_mongoengine import MongoEngine, MongoEngineSessionInterface
@@ -13,6 +14,7 @@ import blinker
 #Date libaries for parsing strings and datetime objects
 from datetime import datetime
 import calendar
+
 # TODO: Move global inits into its own __init__.py file.
 # global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
@@ -294,21 +296,23 @@ def favorite(collab_id):
     return redirect("/")
 
 # Should be a POST, but as a link a GET is more convienent.
-@app.route("/archive/<collab_id>", methods=["GET"])
+@app.route("/archive", methods=["POST"])
 @login_required
-def archive(collab_id):
+def archive():
     # Pull collab for archiving
-    collab_select = Collaboration.objects(id=collab_id).first()
+    collab_select = Collaboration.objects.get(id=request.form['collab_id'])
     # Check the archive status and save opposite
     if collab_select.archive ==  False:
         collab_select.archive = True
-        flash('Collaboration %s successfully archived.' % collab_select.id)
+        # flash('Collaboration %s successfully archived.' % collab_select.id)
     else:
         collab_select.archive = False
-        flash('Collaboration %s successfully restored.' % collab_select.id)
+        # flash('Collaboration %s successfully restored.' % collab_select.id)
     collab_select.save()
+    print("Just above the return")
     # redirect to the index page where the archived collab will have disappeared
-    return redirect('/')
+    return jsonify(collab_id=str(collab_select.id), success=True,
+                   new_new_tag=str(collab_select.new_new_tag))
 
 @app.route("/report/<collab_id>", methods=["GET"])
 @login_required

@@ -3,7 +3,7 @@
   <!--Flash Message  -->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <ul class=flashes>
+    <ul class='flashes'>
       {% for message in messages %}
       <li>{{ message }}</li>
       {% endfor %}
@@ -11,8 +11,9 @@
     {% endif %}
   {% endwith %}
   {% if error %}
-   <p class=error><strong>Error:</strong> {{ error }}</p>
+   <p class='error'><strong>Error:</strong> {{ error }}</p>
   {% endif %}
+  <div id='ajax_flash_msg' class='flashes'></div>
 
   <div id="index-container"class="container-fluid">
     <div class="row">
@@ -39,7 +40,7 @@
             <tr>
               <th>Date Created</th>
               <th>Date Modified</th>
-              <th>Collaboration ID</th>
+              <th><strong>NEW NEW TAG</strong></th>
               <th class="filter-select filter-exact" data-placeholder="Status">Status</th>
               <th>Study Identifier</th>
               <th class="filter-select filter-exact" data-placeholder="Contact">NeuroPace Contact</th>
@@ -61,7 +62,7 @@
               <tr>
                 <td class="collab-cell">{{ collab.utc_2_local(collab.id.generation_time) }}</td>
                 <td class="collab-cell">{{ collab.date_mod.strftime('%Y-%m-%d %I:%M:%S') }}</td>
-                <td class="collab-cell">{{ collab.id }}</td>
+                <td class="collab-cell">{{ collab.new_new_tag }}</td>
                 <td class="collab-cell">{{ collab.status.value }}</td>
                 <td class="collab-cell">{{ collab.study_identifier}}</td>
                 <td class="collab-cell">{{ collab.neuropace_contact.value}}</td>
@@ -76,9 +77,9 @@
                 </td>
                 {% if collab.archive == False%}
                   <td class="collab-icon">
-                    <a href="/archive/{{ collab.id }}">
-                      <i id="archive_{{collab.study_identifier}}" class="fa fa-folder-open-o fa-lg" aria-hidden="true"></i>
-                    </a>
+
+                      <i id="archive_{{collab.id}}" class="btn-archive fa fa-folder-open-o fa-lg" aria-hidden="true"></i>
+
                   </td>
                 {% else %}
                   <td class="collab-icon">

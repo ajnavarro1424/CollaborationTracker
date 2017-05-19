@@ -29,8 +29,18 @@ $(document).ready(function(){
 
 
 
-		// $('.fa fa-folder-open-o fa-lg').click(function(){
-		//
-		// });
+		$('.btn-archive').click(function(){
+			$.post("/archive",
+						  {collab_id : $(this).attr('id').split("_").pop() },
+							function(data, status){
+								var collab_row = $("#archive_"+ data.collab_id).closest("tr");
+								if (data.success) {
+									collab_row.remove();
+									$("#ajax_flash_msg")
+										.html("<p>Successfully archived " + data.new_new_tag + "</p>");
+								}
+							}
+						);
+		});
 
 });
