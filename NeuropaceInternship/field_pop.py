@@ -9,19 +9,19 @@ import csv
 #Create the field_name and value pairs for the dropdows fields in the database
 dropdown_dict = {
                 'reason' : ['N/A', 'Collaboration', 'Grant Proposal', 'Grant', 'Product Development', 'Publication', 'Research', 'Study'],
-                'category' : ['N/A', 'Addiction', 'Epilepsy', 'Memory', 'MRI', 'Spatial Navigation', 'SUDEP', 'Tourette', 'Depression','Visual-Spatial Learning','Visual Prosthesis', "Sleep", 'Other'],
-                'neuropace_contact' : ['N/A', 'EM', 'FS', 'JHP', 'NH', 'SD', 'TS', 'TT', 'TAC', 'Other'],
-                'sharing_method' : ['N/A', 'PDMS', 'Derivative DB', 'USB (encrypted)', 'Email or ftp (encrypted)', 'Cloud (BOX)', 'IEEG.org'],
-                'dataset_description' : ['N/A', 'Aggregate ECOG data', 'CRF data', '.dat files', 'Device Historgrams', 'ECOG data', 'ECOG & CRF Data', 'PDMS', 'Other'],
-                'share_type' : ['N/A', 'NP Sponsored', 'Investigator Initiated'],
-                'sharing_language' : ['N/A', 'NP ICF', 'Institution ICF'],
-                'study_type' : ['N/A', 'IDE', 'IDE/PMA', 'PMA', 'IRB'],
-                'risk_level' : ['N/A', 'NSR', 'SR'],
-                'accessories_language' : ['N/A', 'NP Protocol', 'Institution Protocol'],
+                'category' : ['Stimulation', 'Analystics'],
+                'neuropace_contact' : ['N/A', 'AR', 'AW', 'SD', 'RS' 'Other'],
+                'sharing_method' : ['N/A', 'Encrypted Email', 'Derivative DB', 'USB (encrypted)', 'Email or ftp (encrypted)', 'Cloud (BOX)', 'IEEG.org'],
+                'dataset_description' : ['N/A', '.CSV', 'Database'],
+                'share_type' : ['N/A', 'FD Sponsored', 'Investigator Initiated'],
+                'sharing_language' : ['N/A', 'FD RCT', 'Institution WRP'],
+                'study_type' : ['N/A', 'Research', 'Academic'],
+                'risk_level' : ['N/A', 'Extreme', 'Moderate', "None"],
+                'accessories_language' : ['N/A', 'English'],
                 'single_multi_center' : ['N/A', 'Multiple', 'Single'],
-                'funding_source' : ['N/A', 'Grant NP', 'Grant Institution' 'NP', 'Institution', 'TBD'],
+                'funding_source' : ['N/A'],
                 'contract_needed' : ['Yes, new', 'Yes, update', 'Yes, current', 'No'],
-                'approval_by' : ['N/A', 'TAC', 'CGS', 'JHP'],
+                'approval_by' : ['N/A', 'PT', 'TT', 'RN', 'PW', 'AK'],
                 'contract_status' : ["N/A", 'Fully Executed', 'In Progress', "Not Complete"],
                 #Incomplete is not in the dropdown options in the .csv file
                 'status' : ['N/A', 'Complete', 'On Hold', 'Ongoing', 'Cancel', 'Void', 'In Review', 'Incomplete']
@@ -95,7 +95,7 @@ study_dict = [
 def import_data():
     top_rows = 14  # The first 12 rows have no data??
     end_row = 45
-    with open('DataSharing_HTML5.csv', 'rU') as csv_sheet:
+    with open('DataScrubbed_HTML5.csv', 'rU') as csv_sheet:
         for (row_num, row) in enumerate(csv.reader(csv_sheet, delimiter=',')):#moving down
             if row_num < top_rows:  # skip the column names
                 continue
