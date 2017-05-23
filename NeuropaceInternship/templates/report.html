@@ -37,7 +37,7 @@
           {% for field in stage_dict[stage]%}
           <tr>
             <td class="report-split">{{ labelize(collab_select._fields[field]) }}</td>
-            {% if is_selection(collab_select[field]) %}
+            {% if not_string(collab_select[field]) %}
               <td class="report-split">{{ collab_select[field].value }}</td>
             {% elif field == "date_mod" %}
               <td class="report-split">{{ collab_select[field].strftime('%Y-%m-%d %I:%M:%S') }}</td>
