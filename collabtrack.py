@@ -15,13 +15,16 @@ import blinker
 from datetime import datetime
 import calendar
 
+#Import Heroku environment variables
+import os
+
 # TODO: Move global inits into its own __init__.py file.
 # global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
 assets = Environment(app)
 
-app.config['MONGODB_DB'] = ENV['MONGODB_DB']
-app.config['MONGODB_HOST'] = ENV['MONGODB_URI']
+app.config['MONGODB_DB'] = os.environ.get('MONGODB_DB')
+app.config['MONGODB_HOST'] = os.environ.get('MONGODB_URI')
 
 # PreviousMongoEngine setup
 mdb = MongoEngine(app)
