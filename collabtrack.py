@@ -20,13 +20,10 @@ import calendar
 app = Flask(__name__)
 assets = Environment(app)
 
-#Config for remote database
-# app.config['MONGO_DBNAME'] = 'collabs_db'
-# app.config['MONGO_URI'] = 'mongodb://<ajnavarro1424>:<ajnavarro1424>@ds131511.mlab.com:31511/collabs_db'
 
 #MongoEngine setup
 mdb = MongoEngine(app)
-# app.session_interface = MongoEngineSessionInterface(mdb)
+app.session_interface = MongoEngineSessionInterface(mdb)
 
 # Flask-Login setup
 login_manager = LoginManager()
