@@ -438,4 +438,5 @@ def fav():
 
 if __name__ == "__main__":
     app.config.update(DEBUG = True, SECRET_KEY = '')
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run()
