@@ -21,9 +21,9 @@ import os
 # TODO: Move global inits into its own __init__.py file.
 # global variable representing the entire app (Flask object called 'app')
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 assets = Environment(app)
 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['MONGODB_DB'] = os.environ.get('MONGODB_DB')
 app.config['MONGODB_HOST'] = os.environ.get('MONGODB_URI')
 
