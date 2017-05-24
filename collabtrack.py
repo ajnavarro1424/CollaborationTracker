@@ -437,7 +437,7 @@ def fav():
     return redirect("/")
 
 
-app.config()
+
 if __name__ == "__main__":
     app.config.update(DEBUG = True)
     app.run()
