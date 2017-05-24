@@ -39,10 +39,9 @@ def field_pop():
             selection.save()
 
     # Create a couple very cool(sorry kaz) users in the db
-    alex = User(username="ajnavarro1424", password="cholula")
-    luke = User(username="bauer123", password="frisbee")
-    alex.save()
-    luke.save()
+    heroku_user = User(username="heroku_user", password="heroku_user")
+    heroku_user.save()
+
 
 
 

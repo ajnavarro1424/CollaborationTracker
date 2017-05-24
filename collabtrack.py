@@ -20,8 +20,10 @@ import calendar
 app = Flask(__name__)
 assets = Environment(app)
 
+app.config['MONGODB_DB'] = ENV['MONGODB_DB']
+app.config['MONGODB_HOST'] = ENV['MONGODB_URI']
 
-#MongoEngine setup
+# PreviousMongoEngine setup
 mdb = MongoEngine(app)
 app.session_interface = MongoEngineSessionInterface(mdb)
 
@@ -274,7 +276,7 @@ def list(list):
 
 # Favorite function, takes in collab_id and adds it to list of favorited collabs
 @app.route("/favorite/<collab_id>", methods=["GET"])
-@login_required
+# @login_required
 def favorite(collab_id):
     #Grab collab object from db with collab_id
     collab_select = Collaboration.objects(id = collab_id).first()
@@ -299,7 +301,7 @@ def favorite(collab_id):
 
 # Should be a POST, but as a link a GET is more convienent.
 @app.route("/archive", methods=["POST"])
-@login_required
+# @login_required
 def archive():
     ''' Toggle the archived state on a collaboration.
         Meant to be called via AJAX'''
@@ -320,7 +322,7 @@ def archive():
                    new_new_tag=str(collab_select.new_new_tag))
 
 @app.route("/report/<collab_id>", methods=["GET"])
-@login_required
+# @login_required
 def report(collab_id):
     #Go grab selected collaboration from DB
     collab_select = Collaboration.objects(id=collab_id).first()
@@ -328,7 +330,7 @@ def report(collab_id):
     return render_template("report.html", collab_select=collab_select,report_date=report_date, stage_dict=stage_dict)
 
 @app.route("/search")
-@login_required
+# @login_required
 def search():
     # Grab all the collabs from the database to loop through
     collabs = Collaboration.objects()
@@ -336,7 +338,7 @@ def search():
 
 # Workflow routes that takke a stage and collab_id. Generates and submits forms.
 @app.route("/new/<stage>/<collab_id>", methods=["GET","POST"])
-@login_required
+# @login_required
 def new_stage(stage, collab_id):
     #If new collaboration started, create collaboration document in db
     if collab_id == "none":
@@ -399,7 +401,7 @@ def audit_save(collab_previous, collab_select, stage):
 
 
 @app.route("/audit")
-@login_required
+# @login_required
 def audit():
     audits = Audit.objects()
     return render_template('audit.html', audits=audits)
